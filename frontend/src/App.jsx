@@ -1,0 +1,1121 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Code2, 
+  Mail, 
+  Phone, 
+  Briefcase, 
+  GraduationCap, 
+  Server, 
+  Database, 
+  Layers, 
+  MessageSquare, 
+  Terminal, 
+  Eye, 
+  ExternalLink, 
+  Trash2, 
+  Check, 
+  Lock, 
+  LogOut, 
+  Plus, 
+  X, 
+  User,
+  CheckSquare,
+  Square,
+  Calendar,
+  Sparkles
+} from 'lucide-react';
+
+const Github = ({ size = 24, className = "" }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+    <path d="M9 18c-4.51 2-5-2-7-2" />
+  </svg>
+);
+
+const API_BASE = 'http://localhost:5001/api';
+
+// Fallback Static Data from Resume
+const staticSkills = [
+  { name: 'Java', category: 'Languages', proficiency: 'Expert' },
+  { name: 'JavaScript', category: 'Languages', proficiency: 'Expert' },
+  { name: 'SQL', category: 'Languages', proficiency: 'Intermediate' },
+  { name: 'HTML', category: 'Languages', proficiency: 'Expert' },
+  { name: 'CSS', category: 'Languages', proficiency: 'Expert' },
+  { name: 'React.js', category: 'Frontend', proficiency: 'Expert' },
+  { name: 'Tailwind CSS', category: 'Frontend', proficiency: 'Expert' },
+  { name: 'Node.js', category: 'Backend', proficiency: 'Expert' },
+  { name: 'Express.js', category: 'Backend', proficiency: 'Expert' },
+  { name: 'REST APIs', category: 'Backend', proficiency: 'Expert' },
+  { name: 'MongoDB', category: 'Databases', proficiency: 'Expert' },
+  { name: 'MySQL', category: 'Databases', proficiency: 'Intermediate' },
+  { name: 'Git', category: 'Tools', proficiency: 'Expert' },
+  { name: 'GitHub', category: 'Tools', proficiency: 'Expert' },
+  { name: 'Postman', category: 'Tools', proficiency: 'Expert' },
+  { name: 'VS Code', category: 'Tools', proficiency: 'Expert' },
+  { name: 'Data Structures & Algorithms', category: 'Core Concepts', proficiency: 'Expert' },
+  { name: 'Object-Oriented Programming', category: 'Core Concepts', proficiency: 'Expert' },
+  { name: 'DBMS', category: 'Core Concepts', proficiency: 'Expert' },
+  { name: 'Operating Systems', category: 'Core Concepts', proficiency: 'Intermediate' },
+  { name: 'Computer Networks', category: 'Core Concepts', proficiency: 'Intermediate' },
+  { name: 'Authentication & Authorization', category: 'Core Concepts', proficiency: 'Expert' }
+];
+
+const staticProjects = [
+  {
+    _id: '1',
+    title: 'ApplyWise - Placement & Internship Tracker',
+    description: 'A full-stack MERN platform for tracking job applications, interviews, and resume versions through a centralized dashboard.',
+    technologies: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'JWT', 'Cloudinary', 'Nodemailer'],
+    liveLink: 'https://applywise-l2wg.onrender.com',
+    githubLink: 'https://github.com/RohanRaut21/ApplyWise',
+    bulletPoints: [
+      'Built a full-stack MERN platform for tracking job applications, interviews, and resume versions through a centralized dashboard.',
+      'Implemented JWT-based authentication, role-protected routes, and secure user session management.',
+      'Developed RESTful APIs for application tracking, interview scheduling, notifications, and analytics.',
+      'Integrated Cloudinary and Nodemailer for resume management and automated interview notifications.'
+    ],
+    category: 'MERN Stack'
+  },
+  {
+    _id: '2',
+    title: 'Reverse Market - Buyer Driven Marketplace',
+    description: 'A MERN-based procurement platform enabling buyers to post requirements and sellers to submit competitive bids.',
+    technologies: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'JWT', 'Cloudinary'],
+    liveLink: 'https://reverse-market.onrender.com',
+    githubLink: 'https://github.com/RohanRaut21/Reverse-Market',
+    bulletPoints: [
+      'Developed a MERN-based procurement platform enabling buyers to post requirements and sellers to submit competitive bids.',
+      'Implemented JWT authentication and role-based access control for Buyers, Sellers, and Admins.',
+      'Built RESTful APIs for request management, bidding workflows, messaging, and user management.',
+      'Integrated Cloudinary for media uploads and optimized MongoDB schemas for scalable data handling.'
+    ],
+    category: 'MERN Stack'
+  }
+];
+
+function App() {
+  const [skills, setSkills] = useState(staticSkills);
+  const [projects, setProjects] = useState(staticProjects);
+  const [messages, setMessages] = useState([]);
+  const [activeTab, setActiveTab] = useState('All');
+  
+  // Modals & Dashboard States
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
+  const [showProjectModal, setShowProjectModal] = useState(null); // Project object
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [token, setToken] = useState(localStorage.getItem('token') || '');
+
+  // Form States
+  const [adminUsername, setAdminUsername] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
+  const [contactName, setContactName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactSubject, setContactSubject] = useState('');
+  const [contactMessage, setContactMessage] = useState('');
+  
+  // Notification states
+  const [alert, setAlert] = useState(null); // { type: 'success'|'error', message: '' }
+
+  // Manage projects (add / edit) states
+  const [showAddProject, setShowAddProject] = useState(false);
+  const [newProjTitle, setNewProjTitle] = useState('');
+  const [newProjDesc, setNewProjDesc] = useState('');
+  const [newProjTech, setNewProjTech] = useState('');
+  const [newProjLive, setNewProjLive] = useState('');
+  const [newProjGit, setNewProjGit] = useState('');
+  const [newProjBullets, setNewProjBullets] = useState('');
+
+  // Fetch projects and skills on load
+  useEffect(() => {
+    fetchProjects();
+    fetchSkills();
+    if (token) {
+      setIsAdmin(true);
+      fetchMessages();
+    }
+  }, [token]);
+
+  const showAlert = (type, message) => {
+    setAlert({ type, message });
+    setTimeout(() => setAlert(null), 5000);
+  };
+
+  const fetchProjects = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/projects`);
+      const data = await res.json();
+      if (data.success && data.data.length > 0) {
+        setProjects(data.data);
+      }
+    } catch (err) {
+      console.log('Using static projects backup');
+    }
+  };
+
+  const fetchSkills = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/skills`);
+      const data = await res.json();
+      if (data.success && data.data.length > 0) {
+        setSkills(data.data);
+      }
+    } catch (err) {
+      console.log('Using static skills backup');
+    }
+  };
+
+  const fetchMessages = async () => {
+    if (!token) return;
+    try {
+      const res = await fetch(`${API_BASE}/admin/messages`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMessages(data.data);
+      }
+    } catch (err) {
+      console.error('Error fetching messages', err);
+    }
+  };
+
+  // Admin Actions
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${API_BASE}/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: adminUsername, password: adminPassword })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setToken(data.token);
+        localStorage.setItem('token', data.token);
+        setIsAdmin(true);
+        setShowAdminLogin(false);
+        setShowDashboard(true);
+        showAlert('success', 'Logged in successfully as Admin');
+        // Clear inputs
+        setAdminUsername('');
+        setAdminPassword('');
+      } else {
+        showAlert('error', data.error || 'Invalid credentials');
+      }
+    } catch (err) {
+      showAlert('error', 'Could not connect to backend server');
+    }
+  };
+
+  const handleLogout = () => {
+    setToken('');
+    localStorage.removeItem('token');
+    setIsAdmin(false);
+    setShowDashboard(false);
+    showAlert('success', 'Logged out successfully');
+  };
+
+  const handleToggleRead = async (id, currentStatus) => {
+    try {
+      const res = await fetch(`${API_BASE}/admin/messages/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ isRead: !currentStatus })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMessages(messages.map(msg => msg._id === id ? { ...msg, isRead: !currentStatus } : msg));
+      }
+    } catch (err) {
+      showAlert('error', 'Failed to update message status');
+    }
+  };
+
+  const handleDeleteMessage = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this message?')) return;
+    try {
+      const res = await fetch(`${API_BASE}/admin/messages/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMessages(messages.filter(msg => msg._id !== id));
+        showAlert('success', 'Message deleted successfully');
+      }
+    } catch (err) {
+      showAlert('error', 'Failed to delete message');
+    }
+  };
+
+  // Add project action
+  const handleAddProject = async (e) => {
+    e.preventDefault();
+    const techArray = newProjTech.split(',').map(t => t.trim()).filter(t => t !== '');
+    const bulletArray = newProjBullets.split('\n').map(b => b.trim()).filter(b => b !== '');
+    
+    try {
+      const res = await fetch(`${API_BASE}/projects`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          title: newProjTitle,
+          description: newProjDesc,
+          technologies: techArray,
+          liveLink: newProjLive,
+          githubLink: newProjGit,
+          bulletPoints: bulletArray
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setProjects([...projects, data.data]);
+        setShowAddProject(false);
+        showAlert('success', 'Project added successfully!');
+        // Reset form
+        setNewProjTitle('');
+        setNewProjDesc('');
+        setNewProjTech('');
+        setNewProjLive('');
+        setNewProjGit('');
+        setNewProjBullets('');
+      } else {
+        showAlert('error', data.error || 'Failed to add project');
+      }
+    } catch (err) {
+      showAlert('error', 'Server error while adding project');
+    }
+  };
+
+  const handleDeleteProject = async (id) => {
+    if (!window.confirm('Delete this project permanently?')) return;
+    try {
+      const res = await fetch(`${API_BASE}/projects/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setProjects(projects.filter(p => p._id !== id));
+        showAlert('success', 'Project deleted');
+      }
+    } catch (err) {
+      showAlert('error', 'Failed to delete project');
+    }
+  };
+
+  // User Actions
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${API_BASE}/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: contactName,
+          email: contactEmail,
+          subject: contactSubject,
+          message: contactMessage
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showAlert('success', 'Thank you! Your message has been sent successfully.');
+        setContactName('');
+        setContactEmail('');
+        setContactSubject('');
+        setContactMessage('');
+        // If admin is browsing, refresh messages
+        if (isAdmin) fetchMessages();
+      } else {
+        showAlert('error', data.error || 'Something went wrong. Please try again.');
+      }
+    } catch (err) {
+      showAlert('error', 'Cannot reach backend server. Message could not be sent.');
+    }
+  };
+
+  // Skill categorization Helper
+  const categories = ['Languages', 'Frontend', 'Backend', 'Databases', 'Tools', 'Core Concepts'];
+
+  return (
+    <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black">
+      
+      {/* Alert Notification */}
+      {alert && (
+        <div className="fixed top-24 right-4 z-[100] max-w-sm animate-bounce">
+          <div className={`alert ${alert.type === 'success' ? 'alert-success bg-white text-black border-none' : 'alert-error bg-red-950 text-red-200 border-red-800'} shadow-lg`}>
+            <div>
+              <span>{alert.message}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Glassmorphic Navbar */}
+      <header className="navbar glass-nav sticky top-0 z-[40] px-6 lg:px-16 flex justify-between items-center">
+        <div className="flex-1">
+          <a href="#hero" className="text-xl font-extrabold tracking-widest text-white hover:opacity-80 transition flex items-center gap-2">
+            <Terminal size={22} className="text-white" />
+            <span>ROHAN RAUT</span>
+          </a>
+        </div>
+        
+        {/* Desk Nav */}
+        <div className="hidden md:flex gap-8 items-center text-sm font-semibold tracking-wide">
+          <a href="#about" className="hover:text-neutral-400 transition">About</a>
+          <a href="#experience" className="hover:text-neutral-400 transition">Experience</a>
+          <a href="#skills" className="hover:text-neutral-400 transition">Skills</a>
+          <a href="#projects" className="hover:text-neutral-400 transition">Projects</a>
+          <a href="#contact" className="hover:text-neutral-400 transition">Contact</a>
+          
+          {isAdmin ? (
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setShowDashboard(!showDashboard)}
+                className="btn btn-sm btn-outline border-white text-white hover:bg-white hover:text-black rounded-none"
+              >
+                {showDashboard ? 'Close Admin' : 'Admin Panel'}
+              </button>
+              <button onClick={handleLogout} className="btn btn-sm btn-ghost p-1 hover:bg-transparent text-gray-400 hover:text-white" title="Logout">
+                <LogOut size={18} />
+              </button>
+            </div>
+          ) : (
+            <button 
+              onClick={() => setShowAdminLogin(true)}
+              className="btn btn-sm btn-outline border-white text-white hover:bg-white hover:text-black rounded-none flex items-center gap-1.5"
+            >
+              <Lock size={12} />
+              <span>Admin</span>
+            </button>
+          )}
+        </div>
+
+        {/* Mobile Nav Toggle */}
+        <div className="flex md:hidden dropdown dropdown-end">
+          <label tabIndex={0} className="btn btn-ghost btn-circle">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
+          </label>
+          <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-4 shadow bg-black border border-neutral-800 rounded-none w-52 gap-2">
+            <li><a href="#about">About</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <div className="divider my-1"></div>
+            {isAdmin ? (
+              <>
+                <li><button onClick={() => setShowDashboard(!showDashboard)} className="text-white">{showDashboard ? 'Hide Dashboard' : 'Dashboard'}</button></li>
+                <li><button onClick={handleLogout} className="text-red-400">Logout</button></li>
+              </>
+            ) : (
+              <li><button onClick={() => setShowAdminLogin(true)} className="flex items-center gap-1"><Lock size={12}/>Admin Login</button></li>
+            )}
+          </ul>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section id="hero" className="hero min-h-[90vh] flex flex-col justify-center items-center px-6 lg:px-16 text-center relative overflow-hidden">
+        {/* Sleek Dark Background Grid Overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f0f0f_1px,transparent_1px),linear-gradient(to_bottom,#0f0f0f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0"></div>
+        
+        <div className="max-w-4xl z-10 flex flex-col items-center gap-6">
+          <div className="badge badge-outline border-neutral-700 py-3 px-4 text-xs tracking-widest text-neutral-400 font-bold uppercase mb-2 animate-pulse">
+            <Sparkles size={12} className="mr-1.5 text-white" />
+            Full Stack Developer (MERN)
+          </div>
+          
+          <h1 className="text-5xl md:text-8xl font-extrabold tracking-tighter gradient-text leading-none py-1">
+            ROHAN RAUT
+          </h1>
+          
+          <p className="text-lg md:text-2xl text-neutral-400 max-w-2xl font-light leading-relaxed">
+            I craft scalable backends, design optimized schemas, and build modern interactive frontends.
+          </p>
+
+          {/* Socials / Leetcode Info */}
+          <div className="flex flex-wrap justify-center gap-4 mt-2">
+            <a href="mailto:rautrohan893@gmail.com" className="btn btn-sm btn-ghost hover:bg-neutral-900 text-neutral-400 hover:text-white flex items-center gap-2 rounded-none border border-neutral-800">
+              <Mail size={16} />
+              <span>Email</span>
+            </a>
+            <a href="tel:+919356447941" className="btn btn-sm btn-ghost hover:bg-neutral-900 text-neutral-400 hover:text-white flex items-center gap-2 rounded-none border border-neutral-800">
+              <Phone size={16} />
+              <span>Call</span>
+            </a>
+            <a href="https://github.com/RohanRaut21" target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-ghost hover:bg-neutral-900 text-neutral-400 hover:text-white flex items-center gap-2 rounded-none border border-neutral-800">
+              <Github size={16} />
+              <span>GitHub</span>
+            </a>
+            <a href="https://leetcode.com/u/RohanRaut21/" target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-ghost hover:bg-neutral-900 text-neutral-400 hover:text-white flex items-center gap-2 rounded-none border border-neutral-800">
+              <Code2 size={16} />
+              <span>LeetCode</span>
+            </a>
+          </div>
+
+          <div className="flex gap-4 mt-6">
+            <a href="#projects" className="btn bg-white text-black hover:bg-neutral-200 border-none rounded-none px-8 font-bold">
+              View Projects
+            </a>
+            <a href="#contact" className="btn btn-outline border-white text-white hover:bg-white hover:text-black rounded-none px-8">
+              Get In Touch
+            </a>
+          </div>
+        </div>
+
+        {/* Floating Indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce hidden md:block">
+          <a href="#about" className="text-neutral-500 hover:text-white transition">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </a>
+        </div>
+      </section>
+
+      {/* About & Education Section */}
+      <section id="about" className="py-24 px-6 lg:px-16 max-w-6xl mx-auto border-t border-neutral-900">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
+          
+          {/* Summary */}
+          <div className="md:col-span-7 flex flex-col gap-6">
+            <h2 className="text-xs tracking-widest text-neutral-500 font-bold uppercase">01 / Summary</h2>
+            <h3 className="text-3xl md:text-5xl font-bold tracking-tight">Full Stack Developer with MERN Expertise</h3>
+            <p className="text-neutral-400 leading-relaxed text-lg">
+              Specialized in Express API development, relational/non-relational database design, and building maintainable client-side layouts. Committed to clean, secure application codebases and modern authentication workflows.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
+              <div className="p-5 border border-neutral-900 bg-neutral-950 flex flex-col gap-2">
+                <span className="text-neutral-500 text-xs font-bold uppercase tracking-wider">Focus Areas</span>
+                <span className="text-white font-medium text-sm">Secure Authentication, REST APIs, Cloud Media Storage, Database Query Optimization</span>
+              </div>
+              <div className="p-5 border border-neutral-900 bg-neutral-950 flex flex-col gap-2">
+                <span className="text-neutral-500 text-xs font-bold uppercase tracking-wider">Problem Solving</span>
+                <span className="text-white font-medium text-sm">100+ DSA Solutions on LeetCode using Java. Deep understanding of algorithms.</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Education */}
+          <div className="md:col-span-5 border border-neutral-900 bg-neutral-950/40 p-8 flex flex-col gap-6 relative">
+            <div className="absolute top-0 right-8 w-12 h-[1px] bg-white"></div>
+            <h2 className="text-xs tracking-widest text-neutral-500 font-bold uppercase flex items-center gap-1.5">
+              <GraduationCap size={16} />
+              <span>Education</span>
+            </h2>
+            <div className="flex flex-col gap-4">
+              <div>
+                <span className="text-xs text-neutral-500 font-mono">2023 - 2027</span>
+                <h4 className="text-xl font-bold mt-1 text-white">B.E. Information Technology</h4>
+                <p className="text-neutral-400 text-sm mt-1">Shri Sant Gajanan Maharaj College of Engineering, Shegaon</p>
+              </div>
+              
+              <div className="divider divider-neutral my-1"></div>
+
+              <div className="flex justify-between items-center">
+                <div>
+                  <span className="text-xs text-neutral-500 block">Academic Standing</span>
+                  <span className="text-2xl font-black text-white mt-1">CGPA 8.5 <span className="text-sm font-light text-neutral-500">/ 10</span></span>
+                </div>
+                <div className="badge badge-outline border-neutral-700 text-neutral-400 font-mono">Graduate 2027</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* Experience Section */}
+      <section id="experience" className="py-24 px-6 lg:px-16 bg-neutral-950 border-t border-neutral-900">
+        <div className="max-w-6xl mx-auto flex flex-col gap-12">
+          <div className="flex flex-col gap-3">
+            <h2 className="text-xs tracking-widest text-neutral-500 font-bold uppercase">02 / Experience</h2>
+            <h3 className="text-3xl md:text-5xl font-bold tracking-tight">Core Capabilities</h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* Backend Development */}
+            <div className="p-8 border border-neutral-900 bg-black flex flex-col gap-4 hover:border-neutral-700 transition duration-300">
+              <div className="w-10 h-10 rounded-full border border-neutral-800 flex items-center justify-center text-neutral-400">
+                <Server size={18} />
+              </div>
+              <h4 className="text-lg font-bold text-white mt-2">Backend Development</h4>
+              <p className="text-sm text-neutral-400 leading-relaxed">
+                Built and maintained RESTful APIs using Node.js, Express.js, and MongoDB, focusing on authentication, authorization, and scalable application architecture.
+              </p>
+            </div>
+
+            {/* Database Design */}
+            <div className="p-8 border border-neutral-900 bg-black flex flex-col gap-4 hover:border-neutral-700 transition duration-300">
+              <div className="w-10 h-10 rounded-full border border-neutral-800 flex items-center justify-center text-neutral-400">
+                <Database size={18} />
+              </div>
+              <h4 className="text-lg font-bold text-white mt-2">Database Design</h4>
+              <p className="text-sm text-neutral-400 leading-relaxed">
+                Designed MongoDB schemas and optimized database operations for efficient data management, scaling, and low latency application performance.
+              </p>
+            </div>
+
+            {/* Full-Stack Projects */}
+            <div className="p-8 border border-neutral-900 bg-black flex flex-col gap-4 hover:border-neutral-700 transition duration-300">
+              <div className="w-10 h-10 rounded-full border border-neutral-800 flex items-center justify-center text-neutral-400">
+                <Layers size={18} />
+              </div>
+              <h4 className="text-lg font-bold text-white mt-2">Full-Stack Integration</h4>
+              <p className="text-sm text-neutral-400 leading-relaxed">
+                Developed production MERN applications with JWT secure user sessions, Cloudinary media storage, dynamic file uploads, and responsive layouts.
+              </p>
+            </div>
+
+            {/* Problem Solving */}
+            <div className="p-8 border border-neutral-900 bg-black flex flex-col gap-4 hover:border-neutral-700 transition duration-300">
+              <div className="w-10 h-10 rounded-full border border-neutral-800 flex items-center justify-center text-neutral-400">
+                <Code2 size={18} />
+              </div>
+              <h4 className="text-lg font-bold text-white mt-2">Problem Solving</h4>
+              <p className="text-sm text-neutral-400 leading-relaxed">
+                Solved 100+ Data Structures & Algorithms problems in Java. Proficient in Arrays, Binary Search, Sliding Window, Greedy, Dynamic Programming.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Skills Section */}
+      <section id="skills" className="py-24 px-6 lg:px-16 max-w-6xl mx-auto border-t border-neutral-900">
+        <div className="flex flex-col gap-12">
+          
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+            <div className="flex flex-col gap-3">
+              <h2 className="text-xs tracking-widest text-neutral-500 font-bold uppercase">03 / Skills</h2>
+              <h3 className="text-3xl md:text-5xl font-bold tracking-tight">Technical Arsenal</h3>
+            </div>
+            {/* Filter tabs */}
+            <div className="flex flex-wrap gap-2 border-b border-neutral-800 pb-2">
+              <button 
+                onClick={() => setActiveTab('All')}
+                className={`pb-2 px-3 text-sm font-semibold transition ${activeTab === 'All' ? 'text-white border-b-2 border-white' : 'text-neutral-500 hover:text-white'}`}
+              >
+                All
+              </button>
+              {categories.map(cat => (
+                <button 
+                  key={cat}
+                  onClick={() => setActiveTab(cat)}
+                  className={`pb-2 px-3 text-sm font-semibold transition ${activeTab === cat ? 'text-white border-b-2 border-white' : 'text-neutral-500 hover:text-white'}`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Categorized Skills Render */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {categories
+              .filter(cat => activeTab === 'All' || activeTab === cat)
+              .map(category => {
+                const categorySkills = skills.filter(s => s.category === category);
+                if (categorySkills.length === 0) return null;
+                return (
+                  <div key={category} className="p-6 border border-neutral-900 bg-neutral-950 flex flex-col gap-4">
+                    <span className="text-xs font-mono text-neutral-500 uppercase tracking-widest">{category}</span>
+                    <div className="flex flex-wrap gap-2">
+                      {categorySkills.map((skill, idx) => (
+                        <div 
+                          key={idx} 
+                          className="badge badge-outline border-neutral-800 hover:border-neutral-500 text-white rounded-none py-3.5 px-4 text-xs font-medium cursor-default transition-all duration-200"
+                        >
+                          {skill.name}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+
+        </div>
+      </section>
+
+      {/* Projects Section */}
+      <section id="projects" className="py-24 px-6 lg:px-16 bg-neutral-950 border-t border-neutral-900">
+        <div className="max-w-6xl mx-auto flex flex-col gap-12">
+          
+          <div className="flex justify-between items-end">
+            <div className="flex flex-col gap-3">
+              <h2 className="text-xs tracking-widest text-neutral-500 font-bold uppercase">04 / Projects</h2>
+              <h3 className="text-3xl md:text-5xl font-bold tracking-tight">Featured Creations</h3>
+            </div>
+            {isAdmin && (
+              <button 
+                onClick={() => setShowAddProject(true)} 
+                className="btn btn-sm btn-outline border-white text-white hover:bg-white hover:text-black rounded-none flex items-center gap-1"
+              >
+                <Plus size={14} /> Add Project
+              </button>
+            )}
+          </div>
+
+          {/* Add Project Form (Shown in Dashboard mode) */}
+          {showAddProject && (
+            <div className="border border-neutral-800 p-6 bg-black flex flex-col gap-4 max-w-xl mx-auto w-full">
+              <div className="flex justify-between items-center border-b border-neutral-800 pb-2">
+                <span className="font-bold text-white flex items-center gap-2"><Plus size={16}/>New Project Details</span>
+                <button onClick={() => setShowAddProject(false)} className="text-neutral-500 hover:text-white"><X size={18}/></button>
+              </div>
+              <form onSubmit={handleAddProject} className="flex flex-col gap-3">
+                <input 
+                  type="text" 
+                  placeholder="Project Title" 
+                  value={newProjTitle}
+                  onChange={e => setNewProjTitle(e.target.value)}
+                  className="input input-bordered input-sm bg-neutral-950 border-neutral-800 rounded-none w-full text-white text-sm"
+                  required
+                />
+                <textarea 
+                  placeholder="Short Description" 
+                  value={newProjDesc}
+                  onChange={e => setNewProjDesc(e.target.value)}
+                  className="textarea textarea-bordered textarea-sm bg-neutral-950 border-neutral-800 rounded-none w-full text-white text-sm h-20"
+                  required
+                />
+                <input 
+                  type="text" 
+                  placeholder="Technologies (comma separated: React, MongoDB, JWT)" 
+                  value={newProjTech}
+                  onChange={e => setNewProjTech(e.target.value)}
+                  className="input input-bordered input-sm bg-neutral-950 border-neutral-800 rounded-none w-full text-white text-sm"
+                  required
+                />
+                <input 
+                  type="url" 
+                  placeholder="Live Link (Live Demo URL)" 
+                  value={newProjLive}
+                  onChange={e => setNewProjLive(e.target.value)}
+                  className="input input-bordered input-sm bg-neutral-950 border-neutral-800 rounded-none w-full text-white text-sm"
+                />
+                <input 
+                  type="url" 
+                  placeholder="GitHub Code URL" 
+                  value={newProjGit}
+                  onChange={e => setNewProjGit(e.target.value)}
+                  className="input input-bordered input-sm bg-neutral-950 border-neutral-800 rounded-none w-full text-white text-sm"
+                />
+                <textarea 
+                  placeholder="Key Features/Bullet Points (One per line)" 
+                  value={newProjBullets}
+                  onChange={e => setNewProjBullets(e.target.value)}
+                  className="textarea textarea-bordered textarea-sm bg-neutral-950 border-neutral-800 rounded-none w-full text-white text-sm h-24"
+                />
+                <button type="submit" className="btn btn-sm bg-white text-black hover:bg-neutral-200 border-none rounded-none mt-2">
+                  Create Project
+                </button>
+              </form>
+            </div>
+          )}
+
+          {/* Project Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {projects.map(proj => (
+              <div 
+                key={proj._id} 
+                className="group border border-neutral-900 bg-black neon-card-hover p-8 flex flex-col justify-between gap-6"
+              >
+                <div className="flex flex-col gap-4">
+                  <div className="flex justify-between items-start gap-4">
+                    <span className="text-xs font-mono text-neutral-500 uppercase tracking-widest">{proj.category || 'MERN Stack'}</span>
+                    {isAdmin && (
+                      <button 
+                        onClick={() => handleDeleteProject(proj._id)}
+                        className="text-red-500 hover:text-red-400 p-1"
+                        title="Delete Project"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
+                  <h4 className="text-2xl font-bold tracking-tight text-white">{proj.title}</h4>
+                  <p className="text-sm text-neutral-400 leading-relaxed font-light">{proj.description}</p>
+                  
+                  {/* Tech stack badges */}
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {proj.technologies.map((t, idx) => (
+                      <span key={idx} className="text-[10px] tracking-wider uppercase font-semibold text-neutral-400 bg-neutral-950 py-1 px-2 border border-neutral-900">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-4 pt-4 border-t border-neutral-900">
+                  <button 
+                    onClick={() => setShowProjectModal(proj)}
+                    className="btn btn-sm btn-ghost hover:bg-neutral-900 hover:text-white text-neutral-400 font-semibold rounded-none flex items-center gap-1.5 border border-neutral-800 flex-1"
+                  >
+                    <Eye size={14} />
+                    <span>Details</span>
+                  </button>
+                  {proj.liveLink && (
+                    <a 
+                      href={proj.liveLink} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="btn btn-sm bg-white text-black hover:bg-neutral-200 border-none font-bold rounded-none flex items-center gap-1.5 flex-1"
+                    >
+                      <ExternalLink size={14} />
+                      <span>Live Demo</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-24 px-6 lg:px-16 max-w-6xl mx-auto border-t border-neutral-900">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+          
+          {/* Quick Info */}
+          <div className="md:col-span-5 flex flex-col gap-8">
+            <div className="flex flex-col gap-3">
+              <h2 className="text-xs tracking-widest text-neutral-500 font-bold uppercase">05 / Contact</h2>
+              <h3 className="text-3xl md:text-5xl font-bold tracking-tight">Let's Connect</h3>
+            </div>
+            
+            <p className="text-neutral-400 leading-relaxed font-light">
+              Have a project proposal, job opportunity, or just want to chat about web scalability and databases? Send a message directly and I will get back to you promptly.
+            </p>
+
+            <div className="flex flex-col gap-4 text-sm font-semibold tracking-wide">
+              <div className="flex items-center gap-3">
+                <Mail size={16} className="text-neutral-500" />
+                <a href="mailto:rautrohan893@gmail.com" className="hover:text-neutral-300 transition text-white">
+                  rautrohan893@gmail.com
+                </a>
+              </div>
+              <div className="flex items-center gap-3">
+                <Phone size={16} className="text-neutral-500" />
+                <a href="tel:+919356447941" className="hover:text-neutral-300 transition text-white">
+                  +91-9356447941
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Form */}
+          <div className="md:col-span-7 border border-neutral-900 bg-neutral-950/40 p-8 md:p-10 relative">
+            <h4 className="text-xl font-bold text-white mb-6">Send Message</h4>
+            <form onSubmit={handleContactSubmit} className="flex flex-col gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] uppercase font-mono tracking-widest text-neutral-500">Your Name</label>
+                  <input 
+                    type="text" 
+                    value={contactName}
+                    onChange={e => setContactName(e.target.value)}
+                    placeholder="John Doe" 
+                    className="input bg-black border-neutral-850 hover:border-neutral-700 focus:border-white focus:outline-none rounded-none text-white text-sm px-4"
+                    required 
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] uppercase font-mono tracking-widest text-neutral-500">Email Address</label>
+                  <input 
+                    type="email" 
+                    value={contactEmail}
+                    onChange={e => setContactEmail(e.target.value)}
+                    placeholder="john@example.com" 
+                    className="input bg-black border-neutral-850 hover:border-neutral-700 focus:border-white focus:outline-none rounded-none text-white text-sm px-4"
+                    required 
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] uppercase font-mono tracking-widest text-neutral-500">Subject</label>
+                <input 
+                  type="text" 
+                  value={contactSubject}
+                  onChange={e => setContactSubject(e.target.value)}
+                  placeholder="Job Opportunity" 
+                  className="input bg-black border-neutral-850 hover:border-neutral-700 focus:border-white focus:outline-none rounded-none text-white text-sm px-4"
+                  required 
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] uppercase font-mono tracking-widest text-neutral-500">Message Body</label>
+                <textarea 
+                  value={contactMessage}
+                  onChange={e => setContactMessage(e.target.value)}
+                  placeholder="Hi Rohan, I read your resume and wanted to discuss..." 
+                  className="textarea bg-black border-neutral-850 hover:border-neutral-700 focus:border-white focus:outline-none rounded-none text-white text-sm px-4 h-32 py-3"
+                  required 
+                />
+              </div>
+
+              <button 
+                type="submit" 
+                className="btn bg-white text-black hover:bg-neutral-200 border-none font-bold rounded-none w-full mt-4"
+              >
+                Send message
+              </button>
+            </form>
+          </div>
+
+        </div>
+      </section>
+
+      {/* Admin Panel Modal Overlay */}
+      {showAdminLogin && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="border border-neutral-800 bg-neutral-950 w-full max-w-sm p-8 flex flex-col gap-6 relative rounded-none">
+            <button 
+              onClick={() => setShowAdminLogin(false)}
+              className="absolute top-4 right-4 text-neutral-500 hover:text-white"
+            >
+              <X size={18} />
+            </button>
+            <div className="flex flex-col items-center text-center gap-2">
+              <div className="p-3 bg-neutral-900 border border-neutral-800 text-white mb-2">
+                <Lock size={20} />
+              </div>
+              <h4 className="text-xl font-bold text-white">Admin Dashboard Login</h4>
+              <p className="text-xs text-neutral-500">Authenticate to view submitted messages & edit data.</p>
+            </div>
+            <form onSubmit={handleLogin} className="flex flex-col gap-4">
+              <input 
+                type="text" 
+                placeholder="Username" 
+                value={adminUsername}
+                onChange={e => setAdminUsername(e.target.value)}
+                className="input input-bordered bg-black border-neutral-800 rounded-none w-full text-white text-sm focus:outline-none focus:border-white" 
+                required 
+              />
+              <input 
+                type="password" 
+                placeholder="Password" 
+                value={adminPassword}
+                onChange={e => setAdminPassword(e.target.value)}
+                className="input input-bordered bg-black border-neutral-800 rounded-none w-full text-white text-sm focus:outline-none focus:border-white" 
+                required 
+              />
+              <button 
+                type="submit" 
+                className="btn bg-white text-black hover:bg-neutral-200 border-none font-bold rounded-none w-full mt-2"
+              >
+                Login
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Detail Project Modal */}
+      {showProjectModal && (
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="border border-neutral-800 bg-neutral-950 w-full max-w-2xl p-8 flex flex-col gap-6 relative rounded-none max-h-[90vh] overflow-y-auto">
+            <button 
+              onClick={() => setShowProjectModal(null)}
+              className="absolute top-6 right-6 text-neutral-500 hover:text-white transition"
+            >
+              <X size={20} />
+            </button>
+            
+            <div className="flex flex-col gap-2 mt-4">
+              <span className="text-[10px] font-mono tracking-widest text-neutral-500 uppercase">{showProjectModal.category || 'MERN STACK'}</span>
+              <h3 className="text-3xl font-bold text-white">{showProjectModal.title}</h3>
+            </div>
+            
+            <div className="flex flex-wrap gap-1.5">
+              {showProjectModal.technologies.map((t, idx) => (
+                <span key={idx} className="text-[10px] tracking-wider uppercase font-semibold text-neutral-400 bg-black py-1 px-2.5 border border-neutral-900">
+                  {t}
+                </span>
+              ))}
+            </div>
+
+            <div className="divider divider-neutral my-1"></div>
+
+            <div className="flex flex-col gap-4 text-sm text-neutral-300">
+              <h4 className="font-bold text-white">Project Highlights & Architecture:</h4>
+              <ul className="list-none flex flex-col gap-3">
+                {showProjectModal.bulletPoints && showProjectModal.bulletPoints.length > 0 ? (
+                  showProjectModal.bulletPoints.map((point, idx) => (
+                    <li key={idx} className="flex gap-2.5 items-start">
+                      <span className="mt-1.5 w-1.5 h-1.5 bg-white shrink-0"></span>
+                      <span className="leading-relaxed font-light">{point}</span>
+                    </li>
+                  ))
+                ) : (
+                  <li className="flex gap-2.5 items-start">
+                    <span className="mt-1.5 w-1.5 h-1.5 bg-white shrink-0"></span>
+                    <span className="leading-relaxed font-light">{showProjectModal.description}</span>
+                  </li>
+                )}
+              </ul>
+            </div>
+
+            <div className="flex gap-4 mt-4">
+              {showProjectModal.liveLink && (
+                <a 
+                  href={showProjectModal.liveLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="btn bg-white text-black hover:bg-neutral-200 border-none font-bold rounded-none flex-1 flex items-center justify-center gap-2"
+                >
+                  <ExternalLink size={16} />
+                  <span>Launch Live Site</span>
+                </a>
+              )}
+              <a 
+                href={showProjectModal.githubLink || 'https://github.com/RohanRaut21'} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="btn btn-outline border-neutral-700 text-neutral-450 hover:bg-white hover:text-black hover:border-white rounded-none flex-1 flex items-center justify-center gap-2"
+              >
+                <Github size={16} />
+                <span>Code Repository</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Admin Message Inbox Dashboard Overlay (Shown below navbar if showDashboard is true) */}
+      {showDashboard && isAdmin && (
+        <section className="bg-neutral-950 border-y border-neutral-800 py-12 px-6 lg:px-16 animate-fade-in relative z-30">
+          <div className="max-w-6xl mx-auto flex flex-col gap-8">
+            <div className="flex justify-between items-center border-b border-neutral-800 pb-4">
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] uppercase font-mono tracking-widest text-neutral-500">Security: Authenticated Session</span>
+                <h3 className="text-2xl font-bold text-white flex items-center gap-2">
+                  <User size={20} />
+                  <span>Admin Inbox & Logs</span>
+                </h3>
+              </div>
+              <button 
+                onClick={() => setShowDashboard(false)}
+                className="btn btn-sm btn-ghost hover:bg-neutral-900 border border-neutral-800 rounded-none text-xs text-neutral-450"
+              >
+                Hide Dashboard
+              </button>
+            </div>
+
+            {/* Messages Inbox */}
+            <div className="flex flex-col gap-4">
+              <h4 className="text-lg font-bold text-white flex items-center gap-2">
+                <MessageSquare size={16} />
+                <span>Submissions ({messages.length})</span>
+              </h4>
+              
+              {messages.length === 0 ? (
+                <div className="border border-neutral-900 p-8 text-center text-neutral-500 text-sm font-mono">
+                  No contact submissions found in database.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-4">
+                  {messages.map(msg => (
+                    <div 
+                      key={msg._id}
+                      className={`border p-6 flex flex-col md:flex-row justify-between gap-6 transition ${msg.isRead ? 'border-neutral-950 bg-black' : 'border-white/30 bg-neutral-950'}`}
+                    >
+                      <div className="flex flex-col gap-2 flex-1">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <span className="text-white font-bold text-base">{msg.name}</span>
+                          <span className="text-xs text-neutral-500 font-mono flex items-center gap-1">
+                            <Mail size={12}/> {msg.email}
+                          </span>
+                          <span className="text-[10px] text-neutral-500 font-mono flex items-center gap-1">
+                            <Calendar size={12}/> {new Date(msg.createdAt).toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="text-sm font-semibold text-neutral-300 mt-1">
+                          Subject: {msg.subject}
+                        </div>
+                        <p className="text-sm text-neutral-400 mt-2 whitespace-pre-line leading-relaxed font-light">
+                          {msg.message}
+                        </p>
+                      </div>
+
+                      <div className="flex md:flex-col justify-end items-end gap-2 shrink-0">
+                        <button 
+                          onClick={() => handleToggleRead(msg._id, msg.isRead)}
+                          className="btn btn-xs btn-outline border-neutral-700 hover:bg-neutral-900 rounded-none text-[10px] font-mono flex items-center gap-1"
+                        >
+                          {msg.isRead ? (
+                            <>
+                              <Square size={10} />
+                              <span>Mark Unread</span>
+                            </>
+                          ) : (
+                            <>
+                              <CheckSquare size={10} />
+                              <span>Mark Read</span>
+                            </>
+                          )}
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteMessage(msg._id)}
+                          className="btn btn-xs btn-ghost text-red-500 hover:text-red-400 hover:bg-transparent rounded-none text-[10px] font-mono flex items-center gap-1 p-0 mt-1"
+                        >
+                          <Trash2 size={10} />
+                          <span>Delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Footer */}
+      <footer className="bg-black border-t border-neutral-900 py-12 px-6 lg:px-16 text-center text-xs text-neutral-500 font-light flex flex-col gap-4">
+        <div>
+          &copy; {new Date().getFullYear()} Rohan Raut. Designed & Built in MERN stack.
+        </div>
+        <div className="flex justify-center gap-4 text-[10px] uppercase font-mono tracking-widest">
+          <a href="#about" className="hover:text-neutral-300">About</a>
+          <span>&middot;</span>
+          <a href="#experience" className="hover:text-neutral-300">Experience</a>
+          <span>&middot;</span>
+          <a href="#skills" className="hover:text-neutral-300">Skills</a>
+          <span>&middot;</span>
+          <a href="#projects" className="hover:text-neutral-300">Projects</a>
+        </div>
+      </footer>
+
+    </div>
+  );
+}
+
+export default App;
