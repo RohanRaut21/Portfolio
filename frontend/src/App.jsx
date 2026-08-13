@@ -1,4 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
 import { 
   Code2, 
   Mail, 
@@ -42,6 +47,26 @@ const Github = ({ size = 24, className = "" }) => (
     <path d="M9 18c-4.51 2-5-2-7-2" />
   </svg>
 );
+
+const GlideText = ({ text, speed = "30s", direction = "normal" }) => {
+  return (
+    <div className="relative w-full overflow-hidden py-4 bg-black border-y border-neutral-900 select-none pointer-events-none my-12">
+      <div className="flex whitespace-nowrap">
+        <div 
+          className="flex whitespace-nowrap text-5xl md:text-8xl font-black tracking-[0.1em] text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.06)] uppercase animate-glide"
+          style={{ 
+            animationDuration: speed,
+            animationDirection: direction
+          }}
+        >
+          {Array(8).fill(text).map((t, idx) => (
+            <span key={idx} className="px-8">{t}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const API_BASE = 'http://localhost:5001/api';
 
@@ -104,11 +129,32 @@ const staticProjects = [
   }
 ];
 
+const getCategoryIcon = (category) => {
+  switch (category) {
+    case 'Languages': return <Code2 className="text-neutral-400 group-hover:text-white transition" size={20} />;
+    case 'Frontend': return <Layers className="text-neutral-400 group-hover:text-white transition" size={20} />;
+    case 'Backend': return <Server className="text-neutral-400 group-hover:text-white transition" size={20} />;
+    case 'Databases': return <Database className="text-neutral-400 group-hover:text-white transition" size={20} />;
+    case 'Tools': return <Terminal className="text-neutral-400 group-hover:text-white transition" size={20} />;
+    case 'Core Concepts': return <Sparkles className="text-neutral-400 group-hover:text-white transition" size={20} />;
+    default: return <Code2 className="text-neutral-400 group-hover:text-white transition" size={20} />;
+  }
+};
+
 function App() {
   const [skills, setSkills] = useState(staticSkills);
   const [projects, setProjects] = useState(staticProjects);
   const [messages, setMessages] = useState([]);
   const [activeTab, setActiveTab] = useState('All');
+  const [activeProjectIndex, setActiveProjectIndex] = useState(0);
+  const mainContainerRef = useRef(null);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   // Modals & Dashboard States
   const [showAdminLogin, setShowAdminLogin] = useState(false);
@@ -315,6 +361,7 @@ function App() {
       const data = await res.json();
       if (data.success) {
         setProjects(projects.filter(p => p._id !== id));
+        setActiveProjectIndex(0);
         showAlert('success', 'Project deleted');
       }
     } catch (err) {
@@ -353,11 +400,183 @@ function App() {
     }
   };
 
+  const scrollToProject = (index) => {
+    if (window.innerWidth >= 1024) {
+      const trigger = ScrollTrigger.getById("projects-pin");
+      if (trigger) {
+        const start = trigger.start;
+        const end = trigger.end;
+        const scrollPos = start + (index / (projects.length - 1)) * (end - start);
+        window.scrollTo({
+          top: scrollPos,
+          behavior: 'smooth'
+        });
+      }
+    } else {
+      const slides = document.querySelectorAll(".project-slide");
+      if (slides[index]) {
+        slides[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  };
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    let ctx = gsap.context(() => {
+      // 0. Hero Section Initial Load Animation
+      gsap.timeline()
+      .from("#hero-badge", { y: 20, opacity: 0, duration: 1.0, ease: "power4.out" })
+      .from("#hero-title", { y: 40, scale: 0.95, opacity: 0, duration: 1.5, ease: "power4.out" }, "-=0.7")
+      .from("#hero-desc", { y: 20, opacity: 0, duration: 1.0, ease: "power4.out" }, "-=0.9")
+      .from("#hero-socials > *", { y: 15, opacity: 0, stagger: 0.1, duration: 1.0, ease: "power4.out" }, "-=0.7")
+      .from("#hero-actions > *", { y: 15, opacity: 0, stagger: 0.1, duration: 1.0, ease: "power4.out" }, "-=0.7");
+
+      // 1. Hero Section Scroll Animations
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: "#hero",
+          start: "top top",
+          end: "bottom top",
+          scrub: 1.5
+        }
+      })
+      .to("#hero-title", { scale: 0.85, opacity: 0.3, ease: "none" })
+      .to("#hero-desc", { y: -20, opacity: 0, ease: "none" }, "<")
+      .to("#hero-badge", { y: -30, opacity: 0, ease: "none" }, "<")
+      .to("#hero-socials", { y: -15, opacity: 0, ease: "none" }, "<")
+      .to("#hero-actions", { y: -10, opacity: 0, ease: "none" }, "<");
+
+      // 2. About Section Reveal
+      gsap.from("#about-heading > *", {
+        y: 40,
+        opacity: 0,
+        stagger: 0.2,
+        duration: 1.1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: "#about",
+          start: "top 80%",
+          toggleActions: "play none none reverse"
+        }
+      });
+      
+      gsap.from("#about-cards > *", {
+        y: 50,
+        opacity: 0,
+        stagger: 0.25,
+        duration: 1.1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: "#about",
+          start: "top 70%",
+          toggleActions: "play none none reverse"
+        }
+      });
+
+      // 3. Experience section capabilities reveal
+      gsap.utils.toArray("#experience-cards > *").forEach((card) => {
+        gsap.from(card, {
+          y: 40,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: card,
+            start: "top 90%",
+            toggleActions: "play none none reverse"
+          }
+        });
+      });
+
+      // 4. Skills cards stagger reveal
+      gsap.utils.toArray(".skills-category-card").forEach((card) => {
+        gsap.from(card, {
+          y: 40,
+          opacity: 0,
+          scale: 0.98,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: card,
+            start: "top 90%",
+            toggleActions: "play none none reverse"
+          }
+        });
+      });
+
+      // 5. Projects Section Pinned Horizontal Scroll (Desktop only)
+      let mm = gsap.matchMedia();
+      
+      mm.add("(min-width: 1024px)", () => {
+        ScrollTrigger.create({
+          id: "projects-pin",
+          trigger: "#projects",
+          pin: true,
+          start: "top top",
+          end: () => "+=" + (projects.length * window.innerWidth * 0.8),
+          scrub: 1.8,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            const idx = Math.round(self.progress * (projects.length - 1));
+            setActiveProjectIndex(idx);
+          }
+        });
+
+        // Translate the track horizontally
+        gsap.to(".projects-track", {
+          xPercent: -((projects.length - 1) / projects.length) * 100,
+          ease: "none",
+          scrollTrigger: {
+            trigger: "#projects",
+            start: "top top",
+            end: () => "+=" + (projects.length * window.innerWidth * 0.8),
+            scrub: 1.8,
+            invalidateOnRefresh: true
+          }
+        });
+
+        // Parallax depth animations on inner elements during horizontal scroll
+        projects.forEach((_, index) => {
+          // Slide background text slightly faster
+          gsap.to(`.project-slide:nth-child(${index + 1}) .project-bg-text`, {
+            x: -80,
+            ease: "none",
+            scrollTrigger: {
+              trigger: "#projects",
+              start: "top top",
+              end: () => "+=" + (projects.length * window.innerWidth * 0.8),
+              scrub: 1.5
+            }
+          });
+
+          // Floating mockup subtle x/rotation shift
+          gsap.to(`.project-slide:nth-child(${index + 1}) .project-visual`, {
+            x: 30,
+            rotation: 1.5,
+            ease: "none",
+            scrollTrigger: {
+              trigger: "#projects",
+              start: "top top",
+              end: () => "+=" + (projects.length * window.innerWidth * 0.8),
+              scrub: 1.5
+            }
+          });
+        });
+      });
+
+      ScrollTrigger.refresh();
+    }, mainContainerRef.current);
+
+    return () => ctx.revert();
+  }, [projects, skills, activeTab]);
+
   // Skill categorization Helper
   const categories = ['Languages', 'Frontend', 'Backend', 'Databases', 'Tools', 'Core Concepts'];
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black">
+    <div ref={mainContainerRef} className="min-h-screen bg-black text-white selection:bg-white selection:text-black overflow-x-hidden">
       
       {/* Alert Notification */}
       {alert && (
@@ -435,26 +654,26 @@ function App() {
       </header>
 
       {/* Hero Section */}
-      <section id="hero" className="hero min-h-[90vh] flex flex-col justify-center items-center px-6 lg:px-16 text-center relative overflow-hidden">
+      <section id="hero" className="hero min-h-svh flex flex-col justify-center items-center px-6 lg:px-16 text-center relative overflow-hidden">
         {/* Sleek Dark Background Grid Overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f0f0f_1px,transparent_1px),linear-gradient(to_bottom,#0f0f0f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0"></div>
         
         <div className="max-w-4xl z-10 flex flex-col items-center gap-6">
-          <div className="badge badge-outline border-neutral-700 py-3 px-4 text-xs tracking-widest text-neutral-400 font-bold uppercase mb-2 animate-pulse">
+          <div id="hero-badge" className="badge badge-outline border-neutral-700 py-3 px-4 text-xs tracking-widest text-neutral-400 font-bold uppercase mb-2 animate-pulse">
             <Sparkles size={12} className="mr-1.5 text-white" />
             Full Stack Developer (MERN)
           </div>
           
-          <h1 className="text-5xl md:text-8xl font-extrabold tracking-tighter gradient-text leading-none py-1">
+          <h1 id="hero-title" className="text-5xl md:text-8xl font-extrabold tracking-tighter gradient-text leading-none py-1">
             ROHAN RAUT
           </h1>
           
-          <p className="text-lg md:text-2xl text-neutral-400 max-w-2xl font-light leading-relaxed">
+          <p id="hero-desc" className="text-lg md:text-2xl text-neutral-400 max-w-2xl font-light leading-relaxed">
             I craft scalable backends, design optimized schemas, and build modern interactive frontends.
           </p>
 
           {/* Socials / Leetcode Info */}
-          <div className="flex flex-wrap justify-center gap-4 mt-2">
+          <div id="hero-socials" className="flex flex-wrap justify-center gap-4 mt-2">
             <a href="mailto:rautrohan893@gmail.com" className="btn btn-sm btn-ghost hover:bg-neutral-900 text-neutral-400 hover:text-white flex items-center gap-2 rounded-none border border-neutral-800">
               <Mail size={16} />
               <span>Email</span>
@@ -473,7 +692,7 @@ function App() {
             </a>
           </div>
 
-          <div className="flex gap-4 mt-6">
+          <div id="hero-actions" className="flex gap-4 mt-6">
             <a href="#projects" className="btn bg-white text-black hover:bg-neutral-200 border-none rounded-none px-8 font-bold">
               View Projects
             </a>
@@ -493,12 +712,14 @@ function App() {
         </div>
       </section>
 
+      <GlideText text="FULL STACK DEVELOPER • MERN STACK • DATABASE DESIGN • PROBLEM SOLVER • " speed="35s" />
+
       {/* About & Education Section */}
-      <section id="about" className="py-24 px-6 lg:px-16 max-w-6xl mx-auto border-t border-neutral-900">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
+      <section id="about" className="py-28 px-6 lg:px-16 max-w-[1300px] mx-auto border-t border-neutral-900 min-h-svh flex flex-col justify-center">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-start w-full">
           
           {/* Summary */}
-          <div className="md:col-span-7 flex flex-col gap-6">
+          <div id="about-heading" className="md:col-span-7 flex flex-col gap-6">
             <h2 className="text-xs tracking-widest text-neutral-500 font-bold uppercase">01 / Summary</h2>
             <h3 className="text-3xl md:text-5xl font-bold tracking-tight">Full Stack Developer with MERN Expertise</h3>
             <p className="text-neutral-400 leading-relaxed text-lg">
@@ -517,7 +738,7 @@ function App() {
           </div>
 
           {/* Education */}
-          <div className="md:col-span-5 border border-neutral-900 bg-neutral-950/40 p-8 flex flex-col gap-6 relative">
+          <div id="about-cards" className="md:col-span-5 border border-neutral-900 bg-neutral-950/40 p-8 flex flex-col gap-6 relative">
             <div className="absolute top-0 right-8 w-12 h-[1px] bg-white"></div>
             <h2 className="text-xs tracking-widest text-neutral-500 font-bold uppercase flex items-center gap-1.5">
               <GraduationCap size={16} />
@@ -546,55 +767,55 @@ function App() {
       </section>
 
       {/* Experience Section */}
-      <section id="experience" className="py-24 px-6 lg:px-16 bg-neutral-950 border-t border-neutral-900">
-        <div className="max-w-6xl mx-auto flex flex-col gap-12">
+      <section id="experience" className="py-28 px-6 lg:px-16 bg-neutral-950 border-t border-neutral-900 min-h-svh flex flex-col justify-center">
+        <div className="max-w-[1300px] w-full mx-auto flex flex-col gap-16">
           <div className="flex flex-col gap-3">
             <h2 className="text-xs tracking-widest text-neutral-500 font-bold uppercase">02 / Experience</h2>
             <h3 className="text-3xl md:text-5xl font-bold tracking-tight">Core Capabilities</h3>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div id="experience-cards" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             
             {/* Backend Development */}
-            <div className="p-8 border border-neutral-900 bg-black flex flex-col gap-4 hover:border-neutral-700 transition duration-300">
-              <div className="w-10 h-10 rounded-full border border-neutral-800 flex items-center justify-center text-neutral-400">
+            <div className="p-8 border border-neutral-850 bg-neutral-950/20 flex flex-col gap-4 hover:border-neutral-700 hover:bg-neutral-950/40 transition duration-300">
+              <div className="w-10 h-10 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-200 bg-neutral-900/50">
                 <Server size={18} />
               </div>
               <h4 className="text-lg font-bold text-white mt-2">Backend Development</h4>
-              <p className="text-sm text-neutral-400 leading-relaxed">
+              <p className="text-sm text-neutral-300 leading-relaxed">
                 Built and maintained RESTful APIs using Node.js, Express.js, and MongoDB, focusing on authentication, authorization, and scalable application architecture.
               </p>
             </div>
 
             {/* Database Design */}
-            <div className="p-8 border border-neutral-900 bg-black flex flex-col gap-4 hover:border-neutral-700 transition duration-300">
-              <div className="w-10 h-10 rounded-full border border-neutral-800 flex items-center justify-center text-neutral-400">
+            <div className="p-8 border border-neutral-850 bg-neutral-950/20 flex flex-col gap-4 hover:border-neutral-700 hover:bg-neutral-950/40 transition duration-300">
+              <div className="w-10 h-10 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-200 bg-neutral-900/50">
                 <Database size={18} />
               </div>
               <h4 className="text-lg font-bold text-white mt-2">Database Design</h4>
-              <p className="text-sm text-neutral-400 leading-relaxed">
+              <p className="text-sm text-neutral-300 leading-relaxed">
                 Designed MongoDB schemas and optimized database operations for efficient data management, scaling, and low latency application performance.
               </p>
             </div>
 
             {/* Full-Stack Projects */}
-            <div className="p-8 border border-neutral-900 bg-black flex flex-col gap-4 hover:border-neutral-700 transition duration-300">
-              <div className="w-10 h-10 rounded-full border border-neutral-800 flex items-center justify-center text-neutral-400">
+            <div className="p-8 border border-neutral-850 bg-neutral-950/20 flex flex-col gap-4 hover:border-neutral-700 hover:bg-neutral-950/40 transition duration-300">
+              <div className="w-10 h-10 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-200 bg-neutral-900/50">
                 <Layers size={18} />
               </div>
               <h4 className="text-lg font-bold text-white mt-2">Full-Stack Integration</h4>
-              <p className="text-sm text-neutral-400 leading-relaxed">
+              <p className="text-sm text-neutral-300 leading-relaxed">
                 Developed production MERN applications with JWT secure user sessions, Cloudinary media storage, dynamic file uploads, and responsive layouts.
               </p>
             </div>
 
             {/* Problem Solving */}
-            <div className="p-8 border border-neutral-900 bg-black flex flex-col gap-4 hover:border-neutral-700 transition duration-300">
-              <div className="w-10 h-10 rounded-full border border-neutral-800 flex items-center justify-center text-neutral-400">
+            <div className="p-8 border border-neutral-850 bg-neutral-950/20 flex flex-col gap-4 hover:border-neutral-700 hover:bg-neutral-950/40 transition duration-300">
+              <div className="w-10 h-10 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-200 bg-neutral-900/50">
                 <Code2 size={18} />
               </div>
               <h4 className="text-lg font-bold text-white mt-2">Problem Solving</h4>
-              <p className="text-sm text-neutral-400 leading-relaxed">
+              <p className="text-sm text-neutral-300 leading-relaxed">
                 Solved 100+ Data Structures & Algorithms problems in Java. Proficient in Arrays, Binary Search, Sliding Window, Greedy, Dynamic Programming.
               </p>
             </div>
@@ -604,13 +825,13 @@ function App() {
       </section>
 
       {/* Skills Section */}
-      <section id="skills" className="py-24 px-6 lg:px-16 max-w-6xl mx-auto border-t border-neutral-900">
-        <div className="flex flex-col gap-12">
+      <section id="skills" className="py-28 px-6 lg:px-16 max-w-[1300px] mx-auto border-t border-neutral-900 min-h-svh flex flex-col justify-center">
+        <div className="flex flex-col gap-16 w-full">
           
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <div className="flex flex-col gap-3">
               <h2 className="text-xs tracking-widest text-neutral-500 font-bold uppercase">03 / Skills</h2>
-              <h3 className="text-3xl md:text-5xl font-bold tracking-tight">Technical Arsenal</h3>
+              <h3 className="text-3xl md:text-5xl font-bold tracking-tight">Technical Skills</h3>
             </div>
             {/* Filter tabs */}
             <div className="flex flex-wrap gap-2 border-b border-neutral-800 pb-2">
@@ -624,7 +845,7 @@ function App() {
                 <button 
                   key={cat}
                   onClick={() => setActiveTab(cat)}
-                  className={`pb-2 px-3 text-sm font-semibold transition ${activeTab === cat ? 'text-white border-b-2 border-white' : 'text-neutral-500 hover:text-white'}`}
+                  className={`pb-2 px-3 text-sm font-semibold transition ${activeTab === cat ? 'text-white border-b-2 border-white' : 'text-neutral-400 hover:text-white'}`}
                 >
                   {cat}
                 </button>
@@ -640,15 +861,25 @@ function App() {
                 const categorySkills = skills.filter(s => s.category === category);
                 if (categorySkills.length === 0) return null;
                 return (
-                  <div key={category} className="p-6 border border-neutral-900 bg-neutral-950 flex flex-col gap-4">
-                    <span className="text-xs font-mono text-neutral-500 uppercase tracking-widest">{category}</span>
-                    <div className="flex flex-wrap gap-2">
+                  <div key={category} className="skills-category-card group p-6 border border-neutral-850 bg-neutral-950 hover:border-neutral-700 transition-all duration-300 flex flex-col gap-6 rounded-none relative">
+                    {/* Modern Glow Line */}
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-neutral-800 to-transparent group-hover:via-white transition-all duration-300"></div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 border border-neutral-700 group-hover:border-neutral-500 bg-neutral-900 transition">
+                        {getCategoryIcon(category)}
+                      </div>
+                      <span className="text-sm font-bold uppercase tracking-wider text-white">{category}</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3">
                       {categorySkills.map((skill, idx) => (
                         <div 
                           key={idx} 
-                          className="badge badge-outline border-neutral-800 hover:border-neutral-500 text-white rounded-none py-3.5 px-4 text-xs font-medium cursor-default transition-all duration-200"
+                          className="flex items-center gap-2.5 p-3.5 border border-neutral-800/80 bg-neutral-900/30 hover:border-neutral-750 transition duration-200"
                         >
-                          {skill.name}
+                          <span className="w-1.5 h-1.5 bg-neutral-600 group-hover:bg-neutral-350 transition duration-300 shrink-0"></span>
+                          <span className="text-xs font-semibold text-white">{skill.name}</span>
                         </div>
                       ))}
                     </div>
@@ -660,28 +891,30 @@ function App() {
         </div>
       </section>
 
-      {/* Projects Section */}
-      <section id="projects" className="py-24 px-6 lg:px-16 bg-neutral-950 border-t border-neutral-900">
-        <div className="max-w-6xl mx-auto flex flex-col gap-12">
-          
-          <div className="flex justify-between items-end">
-            <div className="flex flex-col gap-3">
-              <h2 className="text-xs tracking-widest text-neutral-500 font-bold uppercase">04 / Projects</h2>
-              <h3 className="text-3xl md:text-5xl font-bold tracking-tight">Featured Creations</h3>
-            </div>
-            {isAdmin && (
-              <button 
-                onClick={() => setShowAddProject(true)} 
-                className="btn btn-sm btn-outline border-white text-white hover:bg-white hover:text-black rounded-none flex items-center gap-1"
-              >
-                <Plus size={14} /> Add Project
-              </button>
-            )}
-          </div>
+      <GlideText text="REACT.JS • NODE.JS • EXPRESS.JS • MONGODB • JAVASCRIPT • JAVA • SQL • " speed="35s" direction="reverse" />
 
-          {/* Add Project Form (Shown in Dashboard mode) */}
-          {showAddProject && (
-            <div className="border border-neutral-800 p-6 bg-black flex flex-col gap-4 max-w-xl mx-auto w-full">
+      {/* Projects Section */}
+      <section id="projects" className="py-28 px-6 lg:px-16 bg-neutral-950 border-t border-neutral-900 min-h-svh lg:h-svh flex flex-col justify-center relative overflow-hidden">
+        
+        {/* Fixed Title inside section */}
+        <div className="absolute top-12 left-6 md:left-16 z-30 flex flex-col gap-1">
+          <span className="text-xs font-mono text-neutral-500 uppercase tracking-widest block">04 / Projects</span>
+          <h3 className="text-3xl md:text-5xl font-bold tracking-tight text-white">Featured Creations</h3>
+        </div>
+
+        {isAdmin && (
+          <button 
+            onClick={() => setShowAddProject(true)} 
+            className="absolute top-12 right-6 md:right-16 z-30 btn btn-sm btn-outline border-white text-white hover:bg-white hover:text-black rounded-none flex items-center gap-1"
+          >
+            <Plus size={14} /> Add Project
+          </button>
+        )}
+
+        {/* Add Project Form (Shown in Dashboard Overlay Mode) */}
+        {showAddProject && (
+          <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="border border-neutral-800 bg-neutral-950 w-full max-w-xl p-8 flex flex-col gap-6 relative rounded-none max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center border-b border-neutral-800 pb-2">
                 <span className="font-bold text-white flex items-center gap-2"><Plus size={16}/>New Project Details</span>
                 <button onClick={() => setShowAddProject(false)} className="text-neutral-500 hover:text-white"><X size={18}/></button>
@@ -735,71 +968,158 @@ function App() {
                 </button>
               </form>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Project Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {projects.map(proj => (
+        {/* Horizontal Slider Viewport */}
+        <div className="w-full overflow-hidden mt-16 md:mt-24">
+          <div 
+            className="projects-track flex flex-col lg:flex-row h-full"
+            style={{ 
+              width: isDesktop && projects.length > 0 ? `${projects.length * 100}%` : '100%'
+            }}
+          >
+            {projects.map((proj, idx) => (
               <div 
                 key={proj._id} 
-                className="group border border-neutral-900 bg-black neon-card-hover p-8 flex flex-col justify-between gap-6"
+                className="project-slide w-full shrink-0 min-h-[55vh] lg:h-full flex flex-col lg:flex-row items-center justify-center relative px-2 md:px-12 py-12 lg:py-4 border-b border-neutral-900 lg:border-none"
+                style={{ width: isDesktop && projects.length > 0 ? `${100 / projects.length}%` : '100%' }}
               >
-                <div className="flex flex-col gap-4">
-                  <div className="flex justify-between items-start gap-4">
+                
+                {/* Giant outlined background text */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden select-none">
+                  <span className="project-bg-text text-[12vw] font-black uppercase text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.025)] tracking-[0.2em] whitespace-nowrap">
+                    {proj.title.split(' ')[0]}
+                  </span>
+                </div>
+
+                <div className="max-w-[1300px] w-full mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24 relative z-10 px-6 lg:px-16">
+                  {/* Left side: Project Text and Tech Details */}
+                  <div className="project-info flex-1 max-w-xl flex flex-col gap-4 text-left">
                     <span className="text-xs font-mono text-neutral-500 uppercase tracking-widest">{proj.category || 'MERN Stack'}</span>
-                    {isAdmin && (
+                    <h4 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">{proj.title}</h4>
+                    <p className="text-sm md:text-base text-neutral-400 leading-relaxed font-light">{proj.description}</p>
+                    
+                    {/* Tech stack badges */}
+                    <div className="flex flex-wrap gap-1.5 mt-1">
+                      {proj.technologies.map((t, idx) => (
+                        <span key={idx} className="text-[9px] tracking-wider uppercase font-semibold text-neutral-300 bg-neutral-900 py-1.5 px-2.5 border border-neutral-800">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="flex gap-4 mt-4">
                       <button 
-                        onClick={() => handleDeleteProject(proj._id)}
-                        className="text-red-500 hover:text-red-400 p-1"
-                        title="Delete Project"
+                        onClick={() => setShowProjectModal(proj)}
+                        className="btn btn-sm btn-ghost hover:bg-neutral-900 hover:text-white text-neutral-300 font-semibold rounded-none flex items-center gap-1.5 border border-neutral-855 flex-1 py-3 h-auto"
                       >
-                        <Trash2 size={16} />
+                        <Eye size={14} />
+                        <span>View Highlights</span>
                       </button>
-                    )}
+                      {proj.liveLink && (
+                        <a 
+                          href={proj.liveLink} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="btn btn-sm bg-white text-black hover:bg-neutral-200 border-none font-bold rounded-none flex items-center gap-1.5 flex-1 py-3 h-auto justify-center"
+                        >
+                          <ExternalLink size={14} />
+                          <span>Live Demo</span>
+                        </a>
+                      )}
+                      {isAdmin && (
+                        <button 
+                          onClick={() => handleDeleteProject(proj._id)}
+                          className="btn btn-sm btn-outline border-neutral-800 text-red-500 hover:bg-red-950 hover:text-white hover:border-red-900 rounded-none p-2 shrink-0"
+                          title="Delete Project"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  <h4 className="text-2xl font-bold tracking-tight text-white">{proj.title}</h4>
-                  <p className="text-sm text-neutral-400 leading-relaxed font-light">{proj.description}</p>
-                  
-                  {/* Tech stack badges */}
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {proj.technologies.map((t, idx) => (
-                      <span key={idx} className="text-[10px] tracking-wider uppercase font-semibold text-neutral-400 bg-neutral-950 py-1 px-2 border border-neutral-900">
-                        {t}
-                      </span>
-                    ))}
+
+                  {/* Right side: Floating CSS Mockup Dashboard Card */}
+                  <div className="project-visual flex-1 flex justify-center items-center w-full lg:w-auto h-72 lg:h-[400px] relative">
+                    <div className="w-64 h-80 md:w-72 md:h-[360px] bg-neutral-950 border border-neutral-900 p-6 shadow-2xl flex flex-col justify-between animate-float relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-white/5 to-transparent rounded-full -mr-8 -mt-8"></div>
+                      
+                      {/* Header */}
+                      <div className="flex justify-between items-center border-b border-neutral-900 pb-3">
+                        <span className="text-[9px] font-mono tracking-widest text-neutral-500 uppercase">PROJECT DASHBOARD</span>
+                        <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                      </div>
+                      
+                      {/* Dynamic details dependent on project */}
+                      <div className="flex-1 flex flex-col justify-center gap-3 py-4">
+                        {proj.title.includes('ApplyWise') ? (
+                          <div className="flex flex-col gap-2 font-mono text-left">
+                            <div className="text-[9px] text-neutral-500">&gt;_ APPLICATIONS TRACKER</div>
+                            <div className="h-5 bg-neutral-900 border border-neutral-850 flex items-center px-2 text-[9px] text-white justify-between">
+                              <span>Google API</span>
+                              <span className="text-green-400 font-bold">Passed</span>
+                            </div>
+                            <div className="h-5 bg-neutral-900 border border-neutral-850 flex items-center px-2 text-[9px] text-white justify-between">
+                              <span>Cloudinary upload</span>
+                              <span className="text-blue-400">Synced</span>
+                            </div>
+                            <div className="h-5 bg-neutral-900 border border-neutral-850 flex items-center px-2 text-[9px] text-white justify-between">
+                              <span>JWT Authentication</span>
+                              <span className="text-white">Active</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-2 font-mono text-left">
+                            <div className="text-[9px] text-neutral-500">&gt;_ BIDDING SYSTEM</div>
+                            <div className="h-5 bg-neutral-900 border border-neutral-850 flex items-center px-2 text-[9px] text-white justify-between">
+                              <span>Buyer post reqs</span>
+                              <span className="text-blue-400 font-bold">Online</span>
+                            </div>
+                            <div className="h-5 bg-neutral-900 border border-neutral-850 flex items-center px-2 text-[9px] text-white justify-between">
+                              <span>Seller bidding engine</span>
+                              <span className="text-green-400">Active</span>
+                            </div>
+                            <div className="h-5 bg-neutral-900 border border-neutral-850 flex items-center px-2 text-[9px] text-white justify-between">
+                              <span>Role RBAC checks</span>
+                              <span className="text-neutral-450">Verified</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Footer */}
+                      <div className="flex justify-between items-center border-t border-neutral-900 pt-3 text-[9px] font-mono text-neutral-500">
+                        <span>CLIENT-SIDE SPA</span>
+                        <span>DB DESIGNED</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex gap-4 pt-4 border-t border-neutral-900">
-                  <button 
-                    onClick={() => setShowProjectModal(proj)}
-                    className="btn btn-sm btn-ghost hover:bg-neutral-900 hover:text-white text-neutral-400 font-semibold rounded-none flex items-center gap-1.5 border border-neutral-800 flex-1"
-                  >
-                    <Eye size={14} />
-                    <span>Details</span>
-                  </button>
-                  {proj.liveLink && (
-                    <a 
-                      href={proj.liveLink} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="btn btn-sm bg-white text-black hover:bg-neutral-200 border-none font-bold rounded-none flex items-center gap-1.5 flex-1"
-                    >
-                      <ExternalLink size={14} />
-                      <span>Live Demo</span>
-                    </a>
-                  )}
-                </div>
               </div>
             ))}
           </div>
+        </div>
 
+        {/* Glide Numerical Navigation indicators */}
+        <div className="flex gap-6 justify-center items-center mt-12 font-mono">
+          {projects.map((proj, idx) => (
+            <button
+              key={proj._id}
+              onClick={() => scrollToProject(idx)}
+              className={`text-lg font-bold transition-all duration-300 flex items-center gap-1.5 ${activeProjectIndex === idx ? 'text-white scale-110' : 'text-neutral-600 hover:text-white'}`}
+            >
+              <span className="text-xs">{String(idx + 1).padStart(2, '0')}</span>
+              <span className={`h-[1px] bg-white transition-all duration-300 ${activeProjectIndex === idx ? 'w-8' : 'w-0'}`}></span>
+            </button>
+          ))}
         </div>
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-24 px-6 lg:px-16 max-w-6xl mx-auto border-t border-neutral-900">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+      <section id="contact" className="py-28 px-6 lg:px-16 max-w-[1300px] mx-auto border-t border-neutral-900 min-h-svh flex flex-col justify-center">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 w-full">
           
           {/* Quick Info */}
           <div className="md:col-span-5 flex flex-col gap-8">
