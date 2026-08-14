@@ -37,14 +37,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', apiRoutes);
 
 const path = require('path');
+const fs = require('fs');
 
-// Serve static assets in production
-if (process.env.NODE_ENV === 'production') {
+const frontendDistPath = path.join(__dirname, '../frontend/dist');
+
+// Serve static assets in production OR if frontend/dist exists
+if (process.env.NODE_ENV === 'production' || fs.existsSync(frontendDistPath)) {
   // Set static folder
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  app.use(express.static(frontendDistPath));
 
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../frontend', 'dist', 'index.html'));
+    res.sendFile(path.resolve(frontendDistPath, 'index.html'));
   });
 } else {
   // Base route
