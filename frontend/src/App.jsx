@@ -27,7 +27,10 @@ import {
   CheckSquare,
   Square,
   Calendar,
-  Sparkles
+  Sparkles,
+  Monitor,
+  Wrench,
+  Brain
 } from 'lucide-react';
 
 const Github = ({ size = 24, className = "" }) => (
@@ -131,15 +134,298 @@ const staticProjects = [
 
 const getCategoryIcon = (category) => {
   switch (category) {
-    case 'Languages': return <Code2 className="text-neutral-400 group-hover:text-white transition" size={20} />;
-    case 'Frontend': return <Layers className="text-neutral-400 group-hover:text-white transition" size={20} />;
-    case 'Backend': return <Server className="text-neutral-400 group-hover:text-white transition" size={20} />;
-    case 'Databases': return <Database className="text-neutral-400 group-hover:text-white transition" size={20} />;
-    case 'Tools': return <Terminal className="text-neutral-400 group-hover:text-white transition" size={20} />;
-    case 'Core Concepts': return <Sparkles className="text-neutral-400 group-hover:text-white transition" size={20} />;
-    default: return <Code2 className="text-neutral-400 group-hover:text-white transition" size={20} />;
+    case 'Languages': return <Code2 className="w-5 h-5" />;
+    case 'Frontend': return <Monitor className="w-5 h-5" />;
+    case 'Backend': return <Server className="w-5 h-5" />;
+    case 'Databases': return <Database className="w-5 h-5" />;
+    case 'Tools': return <Wrench className="w-5 h-5" />;
+    case 'Core Concepts': return <Brain className="w-5 h-5" />;
+    default: return <Code2 className="w-5 h-5" />;
   }
 };
+
+const getSkillIcon = (name) => {
+  const normalized = name.toLowerCase().replace('.js', '').replace(' ', '');
+  if (normalized.includes('java') && !normalized.includes('script')) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#E76F51] shrink-0" fill="currentColor">
+        <path d="M19.49 14.85a4.2 4.2 0 0 1-1.34 2.12c-1.46 1.15-3.66 1.73-6.6 1.73-2.14 0-3.9-.28-5.32-.83-.16-.06-.21-.21-.1-.31.28-.27.81-.54 1.58-.81 1.75-.6 4.3-.9 7.63-.9.96 0 1.9.06 2.8.19.86.13 1.34.03 1.44-.31a2.83 2.83 0 0 0-.25-1.5c-.34-.73-1.12-1.35-2.34-1.85-.35-.14-.38-.34-.09-.43 1.83-.56 2.88.52 2.59 2.9m-.85-4.5c.2.06.27.18.2.27-.47.63-1.4 1.16-2.8 1.6-1.53.48-3.7.72-6.52.72a38 38 0 0 1-5.18-.36c-.46-.07-.58-.23-.33-.36 1.18-.63 3.16-.95 5.92-.95 1.56 0 3.03.11 4.41.33.99.16 2.37.28 3.52.33 1-.03 1.08-.2 1.08-.4 0-.17-.18-.32-.5-.46-.48-.22-1.18-.36-2.11-.42a.56.56 0 0 1-.36-.61c.07-.36.56-.51 1.48-.46a7 7 0 0 1 3.52.92.51.51 0 0 1 .15.53m.36-4.52a.39.39 0 0 1-.06.2c-.37.52-.94.94-1.72 1.25a17.4 17.4 0 0 1-4.24 1.1c-1.8.27-3.92.4-6.38.4-1.8 0-3.23-.1-4.3-.28a.33.33 0 0 1-.22-.32c.1-.47.66-.82 1.66-1.07 1.56-.39 3.82-.59 6.78-.59.88 0 1.76.04 2.65.12.78.07 1.62.24 2.52.51.87.27.9.46.9.59 0 .1-.09.2-.28.32-.42.27-.79.48-1.1.62a.45.45 0 0 0-.21.57c.1.33.5.42 1.19.26a6 6 0 0 0 3-.98.39.39 0 0 1 .52.3m-8.73 17.95c-.32 0-.61-.03-.89-.09a3.7 3.7 0 0 1-2.02-1.15c-.47-.48-.71-1.05-.71-1.7 0-1 .59-1.95 1.78-2.8a.47.47 0 0 1 .57.06.4.4 0 0 1-.05.57c-.89.65-1.33 1.34-1.33 2.06 0 .47.16.88.49 1.23a2.76 2.76 0 0 0 1.52.88 28.5 28.5 0 0 0 7.84-.04c.33 0 .4.22.18.39a6.83 6.83 0 0 1-3.69.83c-1.28 0-2.47-.07-3.92-.18"/>
+      </svg>
+    );
+  }
+  if (normalized.includes('javascript') || normalized === 'js') {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#F7DF1E] shrink-0" fill="currentColor">
+        <path d="M3 3h18v18H3V3zm11.75 14.19c.4.67 1 1.13 1.75 1.13.78 0 1.23-.42 1.23-1.01 0-.69-.54-.93-1.46-1.33l-.5-.22c-1.5-.64-2.5-1.44-2.5-3.15 0-1.63 1.25-2.9 3.25-2.9 1.68 0 2.75.8 3.39 2.15l-1.48.95c-.36-.67-.85-1.05-1.8-1.05-.69 0-1.18.36-1.18.91 0 .61.43.83 1.27 1.2l.5.21c1.78.77 2.78 1.58 2.78 3.3 0 1.95-1.48 3.23-3.6 3.23-2.12 0-3.52-1.17-4.14-2.55l1.45-.96zm-7.65-4.47c.18-.75.76-1.3 1.56-1.3.82 0 1.34.46 1.34 1.3V19h-1.95v-5.2c0-.36-.16-.54-.54-.54-.33 0-.52.18-.52.54V19H5.05v-6.13h1.95v.35z"/>
+      </svg>
+    );
+  }
+  if (normalized === 'sql') {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#00758F] shrink-0" fill="none" stroke="currentColor" strokeWidth="2">
+        <ellipse cx="12" cy="5" rx="9" ry="3"/>
+        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+        <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/>
+      </svg>
+    );
+  }
+  if (normalized === 'html' || normalized === 'html5') {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#E34F26] shrink-0" fill="currentColor">
+        <path d="M1.5 0h21l-1.91 21.56L12 24l-8.59-2.44L1.5 0zm14.65 14.53l.21-2.44H8.22l-.17-1.95h6.63l.18-1.95H5.88l.53 5.86h7.94l-.23 2.5-2.12.57-2.12-.57-.14-1.55H7.72l.24 2.87 4.04 1.1 4.04-1.1.28-3.08z"/>
+      </svg>
+    );
+  }
+  if (normalized === 'css' || normalized === 'css3') {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#1572B6] shrink-0" fill="currentColor">
+        <path d="M1.5 0h21l-1.91 21.56L12 24l-8.59-2.44L1.5 0zm16.14 6.13H6.07l.18 1.95h11.23l-.36 4.02-5.12 1.4-5.12-1.4-.24-2.68H4.66l.39 4.35 6.95 1.93 6.95-1.93.73-7.64z"/>
+      </svg>
+    );
+  }
+  if (normalized.includes('react')) {
+    return (
+      <svg viewBox="-11.5 -10.23174 23 20.46348" className="w-5 h-5 text-[#61DAFB] shrink-0" fill="none" stroke="currentColor" strokeWidth="1">
+        <circle cx="0" cy="0" r="2.05" fill="currentColor"/>
+        <g stroke="currentColor">
+          <ellipse rx="11" ry="4.2"/>
+          <ellipse rx="11" ry="4.2" transform="rotate(60)"/>
+          <ellipse rx="11" ry="4.2" transform="rotate(120)"/>
+        </g>
+      </svg>
+    );
+  }
+  if (normalized.includes('tailwind')) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#06B6D4] shrink-0" fill="currentColor">
+        <path d="M12 6.036c-2.402 0-4.337.81-5.807 2.43-1.469 1.62-1.97 3.737-1.503 6.353.468 2.617 1.83 4.238 4.09 4.863 2.26.626 4.298-.094 6.115-2.158 1.817-2.064 2.26-4.27 1.332-6.622-.927-2.353-2.34-3.529-4.227-3.529-.636 0-1.258.125-1.867.375.318-1.563 1.25-2.5 2.8-2.5.636 0 1.258.125 1.867.375C16.29 4.975 18 3.5 20.25 3.5c2.402 0 4.337.81 5.807 2.43 1.469 1.62 1.97 3.737 1.503 6.353-.468 2.617-1.83 4.238-4.09 4.863-2.26.626-4.298-.094-6.115-2.158-1.817-2.064-2.26-4.27-1.332-6.622.927-2.353-2.34-3.529-4.227-3.529-.636 0-1.258.125-1.867.375C12.318 8.536 12 7.5 12 6.036z" transform="scale(0.85) translate(2,2)"/>
+      </svg>
+    );
+  }
+  if (normalized === 'node') {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#339933] shrink-0" fill="currentColor">
+        <path d="M12 2L3.5 7v10L12 22l8.5-5V7L12 2zm1 14.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5.67-1.5 1.5-1.5 1.5.67 1.5 1.5zm0-5c0 .83-.67 1.5-1.5 1.5S9 12.33 9 11.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5z"/>
+      </svg>
+    );
+  }
+  if (normalized.includes('express')) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-neutral-300 shrink-0" fill="currentColor">
+        <text x="2" y="16" fontFamily="sans-serif" fontSize="12" fontWeight="bold" letterSpacing="-1">ex</text>
+        <path d="M18 6l-3 4-3-4h-2l4 5-4 5h2l3-4 3 4h2l-4-5 4-5z"/>
+      </svg>
+    );
+  }
+  if (normalized.includes('mongodb')) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#47A248] shrink-0" fill="currentColor">
+        <path d="M12 1.5c-.3 0-.6.1-.9.3-1.6 1.1-3 3-3.8 5.1C6.5 9 6.2 11.5 6.2 14c0 3.3 1.8 6.1 4.5 7.5v1c0 .6.4 1 1.3 1s1.3-.4 1.3-1v-1c2.7-1.4 4.5-4.2 4.5-7.5 0-2.5-.3-5-1.1-7.1-.8-2.1-2.2-4-3.8-5.1-.3-.2-.6-.3-.9-.3zm0 3c.8.9 1.6 2.3 2.1 3.9C13.2 8 12.5 7.5 12 7c-.5.5-1.2 1-2.1 1.4.5-1.6 1.3-3 2.1-3.9z"/>
+      </svg>
+    );
+  }
+  if (normalized.includes('mysql')) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#00758F] shrink-0" fill="currentColor">
+        <path d="M12.117 3.5c-4.148 0-7.525 2.17-7.525 4.836 0 1.258.75 2.4 2.016 3.25l-.234.3c-1.37.584-2.266 1.4-2.266 2.314 0 1.767 3.266 3.2 7.324 3.2 4.059 0 7.324-1.433 7.324-3.2 0-.914-.896-1.73-2.266-2.314l-.234-.3c1.266-.85 2.016-1.992 2.016-3.25 0-2.666-3.377-4.836-7.525-4.836zm0 1.2c2.973 0 5.375 1.5 5.375 3.364 0 1.05-.75 2-2 2.658-.334.175-.7.317-1.075.434l-.458.125a8 8 0 0 0-1.842-1.3l.36-.88a.6.6 0 1 0-1.12-.46l-.37 1a7 7 0 0 0-1-.073c-.3 0-.6.015-.9.043l-.37-1a.6.6 0 1 0-1.12.46l.36.88a8 8 0 0 0-1.842 1.3l-.458-.125a6 6 0 0 1-1.075-.434c-1.25-.658-2-1.608-2-2.658 0-1.864 2.402-3.364 5.375-3.364z"/>
+      </svg>
+    );
+  }
+  if (normalized === 'git') {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#F05032] shrink-0" fill="currentColor">
+        <path d="M22.68 11.31L12.69 1.32c-.42-.42-1.11-.42-1.53 0L9.18 3.3l3.2 3.2c.31-.1.67-.04.93.22.27.27.32.67.17.99l3.02 3.02c.32-.15.72-.1.99.17.38.38.38 1 0 1.38s-1 .38-1.38 0c-.27-.27-.32-.67-.17-.99L12.92 11.3c.15-.32.1-.72-.17-.99-.26-.26-.62-.32-.93-.22L8.62 6.89c.1-.31.04-.67-.22-.93-.27-.27-.67-.32-.99-.17L1.31 11.83c-.42.42-.42 1.11 0 1.53l9.99 9.99c.42.42 1.11.42 1.53 0l9.85-9.85c.42-.42.42-1.11 0-1.53z"/>
+      </svg>
+    );
+  }
+  if (normalized === 'github') {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-white shrink-0" fill="currentColor">
+        <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+      </svg>
+    );
+  }
+  if (normalized === 'postman') {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#FF6C37] shrink-0" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.69 13.93l-2.02-2.02-3.02 3.02-1.38-1.38 3.02-3.02-2.02-2.02h5.42v5.42z"/>
+      </svg>
+    );
+  }
+  if (normalized === 'vscode') {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#007ACC] shrink-0" fill="currentColor">
+        <path d="M23.986 6.568l-3.366-3.411a1.2 1.2 0 0 0-.853-.352h-.032c-.318 0-.623.125-.853.352L12 10.02 5.118 3.157a1.2 1.2 0 0 0-1.738 0L.014 6.568c-.01.01-.014.02-.014.032a1.2 1.2 0 0 0 0 1.688L6.85 15.15.014 22.014a1.2 1.2 0 0 0 0 1.688l3.366 3.411c.23.23.541.352.853.352s.623-.125.853-.352L12 20.25l6.882 6.863c.23.23.541.352.853.352s.623-.125.853-.352l3.366-3.411a1.2 1.2 0 0 0 0-1.688L17.15 15.15l6.836-6.863a1.2 1.2 0 0 0 0-1.688c-.01-.01-.01-.02-.01-.032z" transform="scale(0.85) translate(2,2)"/>
+      </svg>
+    );
+  }
+
+  // Concepts conceptual icons (fallbacks based on keywords)
+  if (normalized.includes('data') || normalized.includes('algo') || normalized.includes('dsa')) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#E0A96D] shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22v-7M5 12v-2a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v2M12 2v5"/>
+        <circle cx="12" cy="11" r="4"/>
+        <circle cx="5" cy="14" r="2"/>
+        <circle cx="19" cy="14" r="2"/>
+      </svg>
+    );
+  }
+  if (normalized.includes('object') || normalized.includes('oop')) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#C77DFF] shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+        <line x1="12" y1="22.08" x2="12" y2="12"/>
+      </svg>
+    );
+  }
+  if (normalized.includes('dbms')) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#4CC9F0] shrink-0" fill="none" stroke="currentColor" strokeWidth="2">
+        <ellipse cx="12" cy="5" rx="9" ry="3"/>
+        <path d="M3 5v6c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+        <path d="M3 11v6c0 1.66 4 3 9 3s9-1.34 9-3v-6"/>
+      </svg>
+    );
+  }
+  if (normalized.includes('operating') || normalized.includes('os')) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#FFB703] shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+        <line x1="8" y1="21" x2="16" y2="21"/>
+        <line x1="12" y1="17" x2="12" y2="21"/>
+      </svg>
+    );
+  }
+  if (normalized.includes('network') || normalized.includes('computer')) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#4361EE] shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="16" y="16" width="6" height="6" rx="1"/>
+        <rect x="2" y="16" width="6" height="6" rx="1"/>
+        <rect x="9" y="2" width="6" height="6" rx="1"/>
+        <path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3M12 12V8"/>
+      </svg>
+    );
+  }
+  if (normalized.includes('auth') || normalized.includes('security')) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#F72585] shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 24 24" className="w-5 h-5 text-neutral-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+      <line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+  );
+};
+
+const categoryThemes = {
+  'Languages': {
+    border: 'border-purple-500/20 hover:border-purple-500/40',
+    shadow: 'shadow-[0_0_30px_rgba(168,85,247,0.02)] hover:shadow-[0_0_30px_rgba(168,85,247,0.06)]',
+    glow: 'rgba(168, 85, 247, 0.08)',
+    text: 'text-purple-400',
+    bg: 'bg-purple-950/10',
+    glowClass: 'from-purple-500/10 via-transparent to-transparent',
+    iconBg: 'bg-purple-950/40 border-purple-500/30 text-purple-400',
+    stroke: '#A855F7',
+    lines: (
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-25" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 170 20 Q 190 60 210 30" fill="none" stroke="#A855F7" strokeWidth="0.8" opacity="0.6" />
+        <path d="M 180 25 Q 195 70 215 40" fill="none" stroke="#A855F7" strokeWidth="0.8" opacity="0.4" />
+        <path d="M 200 160 Q 210 200 230 170" fill="none" stroke="#A855F7" strokeWidth="0.8" opacity="0.6" />
+        <path d="M 190 175 L 220 185" fill="none" stroke="#A855F7" strokeWidth="0.8" opacity="0.5" />
+      </svg>
+    )
+  },
+  'Frontend': {
+    border: 'border-cyan-500/20 hover:border-cyan-500/40',
+    shadow: 'shadow-[0_0_30px_rgba(6,182,212,0.02)] hover:shadow-[0_0_30px_rgba(6,182,212,0.06)]',
+    glow: 'rgba(6, 182, 212, 0.08)',
+    text: 'text-cyan-400',
+    bg: 'bg-cyan-950/10',
+    glowClass: 'from-cyan-500/10 via-transparent to-transparent',
+    iconBg: 'bg-cyan-950/40 border-cyan-500/30 text-cyan-400',
+    stroke: '#06B6D4',
+    lines: (
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-25" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 180 30 Q 210 20 220 50" fill="none" stroke="#06B6D4" strokeWidth="0.8" opacity="0.6" />
+        <path d="M 190 180 Q 220 150 230 190" fill="none" stroke="#06B6D4" strokeWidth="0.8" opacity="0.5" />
+      </svg>
+    )
+  },
+  'Backend': {
+    border: 'border-emerald-500/20 hover:border-emerald-500/40',
+    shadow: 'shadow-[0_0_30px_rgba(16,185,129,0.02)] hover:shadow-[0_0_30px_rgba(16,185,129,0.06)]',
+    glow: 'rgba(16, 185, 129, 0.08)',
+    text: 'text-emerald-400',
+    bg: 'bg-emerald-950/10',
+    glowClass: 'from-emerald-500/10 via-transparent to-transparent',
+    iconBg: 'bg-emerald-950/40 border-emerald-500/30 text-emerald-400',
+    stroke: '#10B981',
+    lines: (
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-25" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 160 40 L 190 20 L 220 50" fill="none" stroke="#10B981" strokeWidth="0.8" opacity="0.5" />
+        <path d="M 180 180 Q 210 190 220 170" fill="none" stroke="#10B981" strokeWidth="0.8" opacity="0.6" />
+      </svg>
+    )
+  },
+  'Databases': {
+    border: 'border-blue-500/20 hover:border-blue-500/40',
+    shadow: 'shadow-[0_0_30px_rgba(59,130,246,0.02)] hover:shadow-[0_0_30px_rgba(59,130,246,0.06)]',
+    glow: 'rgba(59, 130, 246, 0.08)',
+    text: 'text-blue-400',
+    bg: 'bg-blue-950/10',
+    glowClass: 'from-blue-500/10 via-transparent to-transparent',
+    iconBg: 'bg-blue-950/40 border-blue-500/30 text-blue-400',
+    stroke: '#3B82F6',
+    lines: (
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-25" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 180 30 Q 210 50 200 80" fill="none" stroke="#3B82F6" strokeWidth="0.8" opacity="0.5" />
+        <path d="M 190 170 L 210 190 L 230 160" fill="none" stroke="#3B82F6" strokeWidth="0.8" opacity="0.6" />
+      </svg>
+    )
+  },
+  'Tools': {
+    border: 'border-amber-500/20 hover:border-amber-500/40',
+    shadow: 'shadow-[0_0_30px_rgba(245,158,11,0.02)] hover:shadow-[0_0_30px_rgba(245,158,11,0.06)]',
+    glow: 'rgba(245, 158, 11, 0.08)',
+    text: 'text-amber-400',
+    bg: 'bg-amber-950/10',
+    glowClass: 'from-amber-500/10 via-transparent to-transparent',
+    iconBg: 'bg-amber-950/40 border-amber-500/30 text-amber-400',
+    stroke: '#F59E0B',
+    lines: (
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-25" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 180 20 L 210 40 M 190 40 L 220 20" fill="none" stroke="#F59E0B" strokeWidth="0.8" opacity="0.6" />
+        <path d="M 180 180 Q 200 170 220 190" fill="none" stroke="#F59E0B" strokeWidth="0.8" opacity="0.5" />
+      </svg>
+    )
+  },
+  'Core Concepts': {
+    border: 'border-fuchsia-500/20 hover:border-fuchsia-500/40',
+    shadow: 'shadow-[0_0_30px_rgba(217,70,239,0.02)] hover:shadow-[0_0_30px_rgba(217,70,239,0.06)]',
+    glow: 'rgba(217, 70, 239, 0.08)',
+    text: 'text-fuchsia-400',
+    bg: 'bg-fuchsia-950/10',
+    glowClass: 'from-fuchsia-500/10 via-transparent to-transparent',
+    iconBg: 'bg-fuchsia-950/40 border-fuchsia-500/30 text-fuchsia-400',
+    stroke: '#D946EF',
+    lines: (
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-25" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 180 30 Q 200 60 210 90" fill="none" stroke="#D946EF" strokeWidth="0.8" opacity="0.5" />
+        <path d="M 190 170 Q 210 200 230 180" fill="none" stroke="#D946EF" strokeWidth="0.8" opacity="0.6" />
+      </svg>
+    )
+  }
+};
+
 
 function App() {
   const [skills, setSkills] = useState(staticSkills);
@@ -829,15 +1115,21 @@ function App() {
         <div className="flex flex-col gap-16 w-full">
           
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-            <div className="flex flex-col gap-3">
-              <h2 className="text-xs tracking-widest text-neutral-500 font-bold uppercase">03 / Skills</h2>
-              <h3 className="text-3xl md:text-5xl font-bold tracking-tight">Technical Skills</h3>
+            <div className="flex flex-col gap-1">
+              <h2 className="text-xs tracking-widest text-[#D946EF] font-extrabold uppercase">03 / SKILLS</h2>
+              <h3 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mt-1">
+                Technical <span className="skills-section-gradient-text">Skills</span>
+              </h3>
+              <p className="text-neutral-400 text-sm mt-3 max-w-md font-light leading-relaxed">
+                Technologies and tools I use to build modern, scalable and efficient applications.
+              </p>
             </div>
-            {/* Filter tabs */}
-            <div className="flex flex-wrap gap-2 border-b border-neutral-800 pb-2">
+            
+            {/* Filter tabs styled as clean rounded pills */}
+            <div className="flex flex-wrap gap-1.5 bg-neutral-950/40 p-1.5 border border-neutral-900 rounded-xl z-10">
               <button 
                 onClick={() => setActiveTab('All')}
-                className={`pb-2 px-3 text-sm font-semibold transition ${activeTab === 'All' ? 'text-white border-b-2 border-white' : 'text-neutral-500 hover:text-white'}`}
+                className={`px-4 py-1.5 text-xs font-semibold tracking-wide transition-all duration-300 rounded-lg ${activeTab === 'All' ? 'text-white border border-purple-500/40 bg-purple-950/30 shadow-[0_0_15px_rgba(168,85,247,0.1)]' : 'text-neutral-450 hover:text-white'}`}
               >
                 All
               </button>
@@ -845,7 +1137,7 @@ function App() {
                 <button 
                   key={cat}
                   onClick={() => setActiveTab(cat)}
-                  className={`pb-2 px-3 text-sm font-semibold transition ${activeTab === cat ? 'text-white border-b-2 border-white' : 'text-neutral-400 hover:text-white'}`}
+                  className={`px-4 py-1.5 text-xs font-semibold tracking-wide transition-all duration-300 rounded-lg ${activeTab === cat ? 'text-white border border-purple-500/40 bg-purple-950/30 shadow-[0_0_15px_rgba(168,85,247,0.1)]' : 'text-neutral-450 hover:text-white'}`}
                 >
                   {cat}
                 </button>
@@ -860,26 +1152,33 @@ function App() {
               .map(category => {
                 const categorySkills = skills.filter(s => s.category === category);
                 if (categorySkills.length === 0) return null;
+                const theme = categoryThemes[category] || categoryThemes['Languages'];
                 return (
-                  <div key={category} className="skills-category-card group p-6 border border-neutral-850 bg-neutral-950 hover:border-neutral-700 transition-all duration-300 flex flex-col gap-6 rounded-none relative">
-                    {/* Modern Glow Line */}
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-neutral-800 to-transparent group-hover:via-white transition-all duration-300"></div>
+                  <div 
+                    key={category} 
+                    className={`skills-category-card skills-redesign-card group p-6 border ${theme.border} ${theme.shadow} flex flex-col gap-6 relative`}
+                  >
+                    {/* Clean top-left light line overlay */}
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent group-hover:via-white/20 transition-all duration-500 z-10"></div>
                     
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 border border-neutral-700 group-hover:border-neutral-500 bg-neutral-900 transition">
+                    {/* Abstract messy lines background */}
+                    {theme.lines}
+                    
+                    <div className="flex items-center gap-3.5 z-10 relative">
+                      <div className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all duration-300 ${theme.iconBg} shadow-[0_0_15px_rgba(255,255,255,0.01)] group-hover:scale-105`}>
                         {getCategoryIcon(category)}
                       </div>
                       <span className="text-sm font-bold uppercase tracking-wider text-white">{category}</span>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-3 z-10 relative">
                       {categorySkills.map((skill, idx) => (
                         <div 
                           key={idx} 
-                          className="flex items-center gap-2.5 p-3.5 border border-neutral-800/80 bg-neutral-900/30 hover:border-neutral-750 transition duration-200"
+                          className="skills-redesign-chip flex items-center gap-2.5 p-3.5"
                         >
-                          <span className="w-1.5 h-1.5 bg-neutral-600 group-hover:bg-neutral-350 transition duration-300 shrink-0"></span>
-                          <span className="text-xs font-semibold text-white">{skill.name}</span>
+                          {getSkillIcon(skill.name)}
+                          <span className="text-xs font-semibold text-neutral-200 group-hover:text-white transition duration-200">{skill.name}</span>
                         </div>
                       ))}
                     </div>
@@ -887,7 +1186,6 @@ function App() {
                 );
               })}
           </div>
-
         </div>
       </section>
 

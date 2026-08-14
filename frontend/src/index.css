@@ -84,4 +84,49 @@ html {
   animation: float 5s ease-in-out infinite;
 }
 
+/* Redesigned Skills Cards and Utilities */
+.skills-redesign-card {
+  background: linear-gradient(135deg, rgba(16, 16, 20, 0.7) 0%, rgba(8, 8, 10, 0.85) 100%);
+  backdrop-filter: blur(16px);
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skills-redesign-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 0);
+  background-size: 8px 8px;
+  pointer-events: none;
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.skills-redesign-card:hover {
+  transform: translateY(-6px);
+  background: linear-gradient(135deg, rgba(22, 22, 28, 0.75) 0%, rgba(12, 12, 14, 0.9) 100%);
+}
+
+.skills-redesign-chip {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.skills-redesign-chip:hover {
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.skills-section-gradient-text {
+  background: linear-gradient(135deg, #3B82F6 0%, #A855F7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
 
