@@ -36,10 +36,22 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api', apiRoutes);
 
-// Base route
-app.get('/', (req, res) => {
-  res.json({ message: 'Rohan Raut Portfolio Backend API is running...' });
-});
+const path = require('path');
+
+// Serve static assets in production
+if (process.env.NODE_ENV === 'production') {
+  // Set static folder
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../frontend', 'dist', 'index.html'));
+  });
+} else {
+  // Base route
+  app.get('/', (req, res) => {
+    res.json({ message: 'Rohan Raut Portfolio Backend API is running...' });
+  });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {

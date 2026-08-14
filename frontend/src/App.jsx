@@ -68,7 +68,7 @@ const GlideText = ({ text, speed = "30s", direction = "normal" }) => {
   );
 };
 
-const API_BASE = 'http://localhost:5001/api';
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
 // Fallback Static Data from Resume
 const staticSkills = [
@@ -894,12 +894,12 @@ function App() {
       <GlideText text="REACT.JS • NODE.JS • EXPRESS.JS • MONGODB • JAVASCRIPT • JAVA • SQL • " speed="35s" direction="reverse" />
 
       {/* Projects Section */}
-      <section id="projects" className="py-28 px-6 lg:px-16 bg-neutral-950 border-t border-neutral-900 min-h-svh lg:h-svh flex flex-col justify-center relative overflow-hidden">
+      <section id="projects" className="pt-24 pb-10 px-6 lg:px-16 bg-neutral-950 border-t border-neutral-900 min-h-svh lg:h-svh flex flex-col justify-center relative overflow-hidden">
         
         {/* Fixed Title inside section */}
         <div className="absolute top-12 left-6 md:left-16 z-30 flex flex-col gap-1">
           <span className="text-xs font-mono text-neutral-500 uppercase tracking-widest block">04 / Projects</span>
-          <h3 className="text-3xl md:text-5xl font-bold tracking-tight text-white">Featured Creations</h3>
+          <h3 className="text-3xl md:text-5xl font-bold tracking-tight text-white">Projects</h3>
         </div>
 
         {isAdmin && (
@@ -972,7 +972,7 @@ function App() {
         )}
 
         {/* Horizontal Slider Viewport */}
-        <div className="w-full overflow-hidden mt-16 md:mt-24">
+        <div className="w-full overflow-hidden mt-16 lg:mt-20 flex-1 flex flex-col justify-center">
           <div 
             className="projects-track flex flex-col lg:flex-row h-full"
             style={{ 
@@ -1103,7 +1103,7 @@ function App() {
         </div>
 
         {/* Glide Numerical Navigation indicators */}
-        <div className="flex gap-6 justify-center items-center mt-12 font-mono">
+        <div className="flex gap-6 justify-center items-center mt-6 lg:mt-8 font-mono">
           {projects.map((proj, idx) => (
             <button
               key={proj._id}
