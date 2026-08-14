@@ -336,11 +336,9 @@ const categoryThemes = {
     iconBg: 'bg-purple-950/40 border-purple-500/30 text-purple-400',
     stroke: '#A855F7',
     lines: (
-      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-25" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 170 20 Q 190 60 210 30" fill="none" stroke="#A855F7" strokeWidth="0.8" opacity="0.6" />
-        <path d="M 180 25 Q 195 70 215 40" fill="none" stroke="#A855F7" strokeWidth="0.8" opacity="0.4" />
-        <path d="M 200 160 Q 210 200 230 170" fill="none" stroke="#A855F7" strokeWidth="0.8" opacity="0.6" />
-        <path d="M 190 175 L 220 185" fill="none" stroke="#A855F7" strokeWidth="0.8" opacity="0.5" />
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30 z-0" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 190 40 C 210 20, 225 35, 210 50 C 195 65, 220 75, 230 60" stroke="#A855F7" strokeWidth="1" opacity="0.4" strokeLinecap="round" />
+        <path d="M 195 180 C 205 200, 225 210, 210 220 C 195 230, 220 235, 225 215" stroke="#A855F7" strokeWidth="1" opacity="0.4" strokeLinecap="round" />
       </svg>
     )
   },
@@ -354,9 +352,9 @@ const categoryThemes = {
     iconBg: 'bg-cyan-950/40 border-cyan-500/30 text-cyan-400',
     stroke: '#06B6D4',
     lines: (
-      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-25" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 180 30 Q 210 20 220 50" fill="none" stroke="#06B6D4" strokeWidth="0.8" opacity="0.6" />
-        <path d="M 190 180 Q 220 150 230 190" fill="none" stroke="#06B6D4" strokeWidth="0.8" opacity="0.5" />
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30 z-0" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 185 50 C 205 35, 220 40, 210 60 C 200 80, 225 80, 230 65" stroke="#06B6D4" strokeWidth="1" opacity="0.4" strokeLinecap="round" />
+        <path d="M 200 170 C 210 190, 225 195, 215 210 C 205 225, 225 225, 230 210" stroke="#06B6D4" strokeWidth="1" opacity="0.4" strokeLinecap="round" />
       </svg>
     )
   },
@@ -370,9 +368,9 @@ const categoryThemes = {
     iconBg: 'bg-emerald-950/40 border-emerald-500/30 text-emerald-400',
     stroke: '#10B981',
     lines: (
-      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-25" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 160 40 L 190 20 L 220 50" fill="none" stroke="#10B981" strokeWidth="0.8" opacity="0.5" />
-        <path d="M 180 180 Q 210 190 220 170" fill="none" stroke="#10B981" strokeWidth="0.8" opacity="0.6" />
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30 z-0" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 195 35 C 210 25, 225 30, 215 45 C 205 60, 220 70, 225 55" stroke="#10B981" strokeWidth="1" opacity="0.4" strokeLinecap="round" />
+        <path d="M 190 190 C 205 205, 225 210, 215 225 C 205 240, 220 240, 225 225" stroke="#10B981" strokeWidth="1" opacity="0.4" strokeLinecap="round" />
       </svg>
     )
   },
@@ -386,9 +384,9 @@ const categoryThemes = {
     iconBg: 'bg-blue-950/40 border-blue-500/30 text-blue-400',
     stroke: '#3B82F6',
     lines: (
-      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-25" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 180 30 Q 210 50 200 80" fill="none" stroke="#3B82F6" strokeWidth="0.8" opacity="0.5" />
-        <path d="M 190 170 L 210 190 L 230 160" fill="none" stroke="#3B82F6" strokeWidth="0.8" opacity="0.6" />
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30 z-0" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 190 45 C 205 30, 220 35, 210 50 C 200 65, 225 70, 228 55" stroke="#3B82F6" strokeWidth="1" opacity="0.4" strokeLinecap="round" />
+        <path d="M 195 185 C 210 195, 225 200, 215 215 C 205 230, 225 230, 228 215" stroke="#3B82F6" strokeWidth="1" opacity="0.4" strokeLinecap="round" />
       </svg>
     )
   },
@@ -402,9 +400,9 @@ const categoryThemes = {
     iconBg: 'bg-amber-950/40 border-amber-500/30 text-amber-400',
     stroke: '#F59E0B',
     lines: (
-      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-25" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 180 20 L 210 40 M 190 40 L 220 20" fill="none" stroke="#F59E0B" strokeWidth="0.8" opacity="0.6" />
-        <path d="M 180 180 Q 200 170 220 190" fill="none" stroke="#F59E0B" strokeWidth="0.8" opacity="0.5" />
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30 z-0" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 185 40 C 205 25, 220 30, 210 45 C 200 60, 225 60, 228 45" stroke="#F59E0B" strokeWidth="1" opacity="0.4" strokeLinecap="round" />
+        <path d="M 190 180 C 205 195, 225 200, 215 215 C 205 230, 225 230, 228 210" stroke="#F59E0B" strokeWidth="1" opacity="0.4" strokeLinecap="round" />
       </svg>
     )
   },
@@ -418,9 +416,9 @@ const categoryThemes = {
     iconBg: 'bg-fuchsia-950/40 border-fuchsia-500/30 text-fuchsia-400',
     stroke: '#D946EF',
     lines: (
-      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-25" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 180 30 Q 200 60 210 90" fill="none" stroke="#D946EF" strokeWidth="0.8" opacity="0.5" />
-        <path d="M 190 170 Q 210 200 230 180" fill="none" stroke="#D946EF" strokeWidth="0.8" opacity="0.6" />
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30 z-0" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 190 35 C 205 20, 220 25, 210 40 C 200 55, 225 60, 228 45" stroke="#D946EF" strokeWidth="1" opacity="0.4" strokeLinecap="round" />
+        <path d="M 195 185 C 210 195, 225 200, 215 215 C 205 230, 225 230, 228 215" stroke="#D946EF" strokeWidth="1" opacity="0.4" strokeLinecap="round" />
       </svg>
     )
   }
@@ -1111,8 +1109,15 @@ function App() {
       </section>
 
       {/* Skills Section */}
-      <section id="skills" className="py-28 px-6 lg:px-16 max-w-[1300px] mx-auto border-t border-neutral-900 min-h-svh flex flex-col justify-center">
-        <div className="flex flex-col gap-16 w-full">
+      <section id="skills" className="relative py-28 w-full bg-[#050508] border-t border-neutral-900 min-h-svh flex flex-col justify-center overflow-hidden">
+        {/* Futuristic Background Dot Mesh */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c0c14_1.5px,transparent_1.5px),linear-gradient(to_bottom,#0c0c14_1.5px,transparent_1.5px)] bg-[size:3.5rem_3.5rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0"></div>
+        
+        {/* Soft Background Radial Auras */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-950/15 rounded-full blur-[140px] pointer-events-none z-0"></div>
+        <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-blue-950/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+
+        <div className="max-w-[1300px] w-full mx-auto px-6 lg:px-16 flex flex-col gap-16 z-10 relative">
           
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <div className="flex flex-col gap-1">
